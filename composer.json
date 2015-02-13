@@ -16,6 +16,10 @@
         }
     ],
 
+    "require": {
+        "octo/media": "dev-master"
+    },
+
     "autoload": {
         "psr-4": { "Octo\\Pages\\": "" }
     }

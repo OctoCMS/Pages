@@ -599,9 +599,9 @@ trait PageVersionBase
     /**
     * Get the File model for this PageVersion by Id.
     *
-    * @uses \Octo\System\Store\FileStore::getById()
-    * @uses \Octo\System\Model\File
-    * @return \Octo\System\Model\File
+    * @uses \Octo\File\Store\FileStore::getById()
+    * @uses \Octo\File\Model\File
+    * @return \Octo\File\Model\File
     */
     public function getImage()
     {
@@ -611,7 +611,7 @@ trait PageVersionBase
             return null;
         }
 
-        return Factory::getStore('File', 'Octo\System')->getById($key);
+        return Factory::getStore('File', 'Octo\File')->getById($key);
     }
 
     /**
@@ -622,7 +622,7 @@ trait PageVersionBase
     public function setImage($value)
     {
         // Is this an instance of File?
-        if ($value instanceof \Octo\System\Model\File) {
+        if ($value instanceof \Octo\File\Model\File) {
             return $this->setImageObject($value);
         }
 
@@ -638,9 +638,9 @@ trait PageVersionBase
     /**
     * Set Image - Accepts a File model.
     *
-    * @param $value \Octo\System\Model\File
+    * @param $value \Octo\File\Model\File
     */
-    public function setImageObject(\Octo\System\Model\File $value)
+    public function setImageObject(\Octo\File\Model\File $value)
     {
         return $this->setImageId($value->getId());
     }
