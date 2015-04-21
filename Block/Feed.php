@@ -21,7 +21,7 @@ class Feed extends Block
     public static function getInfo()
     {
         return [
-            'title' => 'Feeds',
+            'title' => 'RSS/Atom Feed',
             'icon' => 'rss',
             'editor' => ['\Octo\Pages\Block\Feed', 'getEditorForm']
         ];
@@ -66,7 +66,7 @@ class Feed extends Block
         $result = null;
 
         if (!empty($url)) {
-            $cache = Cache::getCache(Cache::TYPE_APC);
+            $cache = Cache::getCache();
             $hash = 'feed:' . md5($url);
             //$result = $cache->get($hash, null);
 

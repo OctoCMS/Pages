@@ -13,7 +13,7 @@ class Map extends Block
     public static function getInfo()
     {
         return [
-            'title' => 'Maps',
+            'title' => 'Map',
             'icon' => 'map-marker',
             'editor' => ['\Octo\Pages\Block\Map', 'getEditorForm']
         ];

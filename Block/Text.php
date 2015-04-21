@@ -9,14 +9,14 @@ use b8\Form\FieldSet;
 use Octo\Admin\Form;
 use Octo\Block;
 use Octo\Store;
-use Octo\Template;
+use Octo\Html\Template;
 
 class Text extends Block
 {
     public static function getInfo()
     {
         return [
-            'title' => 'Text Content',
+            'title' => 'Rich Text Editor',
             'icon' => 'file-text-o',
             'editor' => ['\Octo\Pages\Block\Text', 'getEditorForm'],
         ];
@@ -70,7 +70,7 @@ class Text extends Block
         if (isset($matches[1])) {
             $file = Store::get('File')->getById($matches[1]);
             if ($file) {
-                $template = Template::getPublicTemplate('Block/Text/File');
+                $template = Template::load('Block/Text/File');
                 $template->file = $file;
 
                 return $template->render();

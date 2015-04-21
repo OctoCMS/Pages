@@ -1,0 +1,36 @@
+<?php
+
+/**
+ * Page model collection
+ */
+
+namespace Octo\Pages\Model;
+
+use Octo;
+use b8\Model\Collection;
+
+/**
+ * Page Model Collection
+ */
+class PageCollection extends Collection
+{
+    /**
+     * Add a Page model to the collection.
+     * @param string $key
+     * @param Page $value
+     * @return PageCollection
+     */
+    public function add($key, Page $value)
+    {
+        return parent::add($key, $value);
+    }
+
+    /**
+     * @param $key
+     * @return Page|null
+     */
+    public function get($key)
+    {
+        return parent::get($key);
+    }
+}

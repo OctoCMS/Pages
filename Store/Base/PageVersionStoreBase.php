@@ -14,6 +14,7 @@ use b8\Database\Query\Criteria;
 use b8\Exception\StoreException;
 use Octo\Store;
 use Octo\Pages\Model\PageVersion;
+use Octo\Pages\Model\PageVersionCollection;
 
 /**
  * PageVersion Base Store
@@ -49,6 +50,13 @@ trait PageVersionStoreBase
         if (is_null($value)) {
             throw new StoreException('Value passed to ' . __FUNCTION__ . ' cannot be null.');
         }
+        // This is the primary key, so try and get from cache:
+        $cacheResult = $this->getFromCache($value);
+
+        if (!empty($cacheResult)) {
+            return $cacheResult;
+        }
+
 
         $query = new Query($this->getNamespace('PageVersion').'\Model\PageVersion', $useConnection);
         $query->select('*')->from('page_version')->limit(1);
@@ -57,7 +65,11 @@ trait PageVersionStoreBase
 
         try {
             $query->execute();
-            return $query->fetch();
+            $result = $query->fetch();
+
+            $this->setCache($value, $result);
+
+            return $result;
         } catch (PDOException $ex) {
             throw new StoreException('Could not get PageVersion by Id', 0, $ex);
         }
@@ -110,7 +122,7 @@ trait PageVersionStoreBase
 
         try {
             $query->execute();
-            return $query->fetchAll();
+            return new PageVersionCollection($query->fetchAll());
         } catch (PDOException $ex) {
             throw new StoreException('Could not get PageVersion by PageId', 0, $ex);
         }
@@ -164,7 +176,7 @@ trait PageVersionStoreBase
 
         try {
             $query->execute();
-            return $query->fetchAll();
+            return new PageVersionCollection($query->fetchAll());
         } catch (PDOException $ex) {
             throw new StoreException('Could not get PageVersion by ContentItemId', 0, $ex);
         }
@@ -218,7 +230,7 @@ trait PageVersionStoreBase
 
         try {
             $query->execute();
-            return $query->fetchAll();
+            return new PageVersionCollection($query->fetchAll());
         } catch (PDOException $ex) {
             throw new StoreException('Could not get PageVersion by UserId', 0, $ex);
         }
@@ -272,7 +284,7 @@ trait PageVersionStoreBase
 
         try {
             $query->execute();
-            return $query->fetchAll();
+            return new PageVersionCollection($query->fetchAll());
         } catch (PDOException $ex) {
             throw new StoreException('Could not get PageVersion by ImageId', 0, $ex);
         }

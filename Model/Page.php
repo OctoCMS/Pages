@@ -6,7 +6,6 @@
 
 namespace Octo\Pages\Model;
 
-use b8\Cache;
 use Octo;
 use Octo\Store;
 use Octo\Utilities\StringUtilities;
@@ -23,8 +22,6 @@ class Page extends Octo\Model
     {
         parent::__construct($initialData);
         $this->getters['hasChildren'] = 'hasChildren';
-        $this->cache = Cache::getCache(Cache::TYPE_APC);
-
         $this->getters['isLocked'] = 'getIsLocked';
         $this->getters['latestVersion'] = 'getLatestVersion';
     }
@@ -42,10 +39,9 @@ class Page extends Octo\Model
             return $this->{$getter}();
         }
 
-        // Try content variables:
-        $fromContent = $this->getCurrentVersion()->getVariable($key);
-        if ($fromContent) {
-            return $fromContent;
+        $rtn = $this->getCurrentVersion()->getVariable($key);
+        if (!is_null($rtn)) {
+            return $rtn;
         }
 
         // Try and get from parent page:

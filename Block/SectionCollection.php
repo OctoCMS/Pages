@@ -20,7 +20,7 @@ class SectionCollection extends Block
     public static function getInfo()
     {
         return [
-            'title' => 'Section Collections',
+            'title' => 'Page Collection (By Parent)',
             'icon' => 'sitemap',
             'editor' => ['\Octo\Pages\Block\SectionCollection', 'getEditorForm']
         ];

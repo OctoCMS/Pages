@@ -21,7 +21,7 @@ class PageCollection extends Block
     public static function getInfo()
     {
         return [
-            'title' => 'Page Collections',
+            'title' => 'Page Collection (Selector)',
             'icon' => 'sitemap',
             'editor' => ['\Octo\Pages\Block\PageCollection', 'getEditorForm']
         ];

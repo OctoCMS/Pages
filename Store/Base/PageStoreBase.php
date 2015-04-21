@@ -14,6 +14,7 @@ use b8\Database\Query\Criteria;
 use b8\Exception\StoreException;
 use Octo\Store;
 use Octo\Pages\Model\Page;
+use Octo\Pages\Model\PageCollection;
 
 /**
  * Page Base Store
@@ -49,6 +50,13 @@ trait PageStoreBase
         if (is_null($value)) {
             throw new StoreException('Value passed to ' . __FUNCTION__ . ' cannot be null.');
         }
+        // This is the primary key, so try and get from cache:
+        $cacheResult = $this->getFromCache($value);
+
+        if (!empty($cacheResult)) {
+            return $cacheResult;
+        }
+
 
         $query = new Query($this->getNamespace('Page').'\Model\Page', $useConnection);
         $query->select('*')->from('page')->limit(1);
@@ -57,7 +65,11 @@ trait PageStoreBase
 
         try {
             $query->execute();
-            return $query->fetch();
+            $result = $query->fetch();
+
+            $this->setCache($value, $result);
+
+            return $result;
         } catch (PDOException $ex) {
             throw new StoreException('Could not get Page by Id', 0, $ex);
         }
@@ -110,7 +122,7 @@ trait PageStoreBase
 
         try {
             $query->execute();
-            return $query->fetchAll();
+            return new PageCollection($query->fetchAll());
         } catch (PDOException $ex) {
             throw new StoreException('Could not get Page by ParentId', 0, $ex);
         }
@@ -164,7 +176,7 @@ trait PageStoreBase
 
         try {
             $query->execute();
-            return $query->fetchAll();
+            return new PageCollection($query->fetchAll());
         } catch (PDOException $ex) {
             throw new StoreException('Could not get Page by CurrentVersionId', 0, $ex);
         }
@@ -189,9 +201,67 @@ trait PageStoreBase
 
         try {
             $query->execute();
-            return $query->fetch();
+            $result = $query->fetch();
+
+            $this->setCache($value, $result);
+
+            return $result;
         } catch (PDOException $ex) {
             throw new StoreException('Could not get Page by Uri', 0, $ex);
         }
+    }
+
+    /**
+     * @param $value
+     * @param array $options Offsets, limits, etc.
+     * @param string $useConnection Connection type to use.
+     * @throws StoreException
+     * @return int
+     */
+    public function getTotalForContentTypeId($value, $options = [], $useConnection = 'read')
+    {
+        if (is_null($value)) {
+            throw new StoreException('Value passed to ' . __FUNCTION__ . ' cannot be null.');
+        }
+
+        $query = new Query($this->getNamespace('Page').'\Model\Page', $useConnection);
+        $query->from('page')->where('`content_type_id` = :content_type_id');
+        $query->bind(':content_type_id', $value);
+
+        $this->handleQueryOptions($query, $options);
+
+        try {
+            return $query->getCount();
+        } catch (PDOException $ex) {
+            throw new StoreException('Could not get count of Page by ContentTypeId', 0, $ex);
+        }
+    }
+
+    /**
+     * @param $value
+     * @param array $options Limits, offsets, etc.
+     * @param string $useConnection Connection type to use.
+     * @throws StoreException
+     * @return Page[]
+     */
+    public function getByContentTypeId($value, $options = [], $useConnection = 'read')
+    {
+        if (is_null($value)) {
+            throw new StoreException('Value passed to ' . __FUNCTION__ . ' cannot be null.');
+        }
+
+        $query = new Query($this->getNamespace('Page').'\Model\Page', $useConnection);
+        $query->from('page')->where('`content_type_id` = :content_type_id');
+        $query->bind(':content_type_id', $value);
+
+        $this->handleQueryOptions($query, $options);
+
+        try {
+            $query->execute();
+            return new PageCollection($query->fetchAll());
+        } catch (PDOException $ex) {
+            throw new StoreException('Could not get Page by ContentTypeId', 0, $ex);
+        }
+
     }
 }

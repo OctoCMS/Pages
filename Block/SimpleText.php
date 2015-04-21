@@ -17,7 +17,7 @@ class SimpleText extends Block
     public static function getInfo()
     {
         return [
-            'title' => 'Text Content',
+            'title' => 'Text',
             'icon' => 'file-text-o',
             'editor' => ['\Octo\Pages\Block\SimpleText', 'getEditorForm'],
         ];

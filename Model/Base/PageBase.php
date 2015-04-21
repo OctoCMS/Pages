@@ -37,12 +37,17 @@ trait PageBase
         $this->data['active'] = null;
         $this->getters['active'] = 'getActive';
         $this->setters['active'] = 'setActive';
+        $this->data['content_type_id'] = null;
+        $this->getters['content_type_id'] = 'getContentTypeId';
+        $this->setters['content_type_id'] = 'setContentTypeId';
 
         // Foreign keys:
         $this->getters['CurrentVersion'] = 'getCurrentVersion';
         $this->setters['CurrentVersion'] = 'setCurrentVersion';
         $this->getters['Parent'] = 'getParent';
         $this->setters['Parent'] = 'setParent';
+        $this->getters['ContentType'] = 'getContentType';
+        $this->setters['ContentType'] = 'setContentType';
     }
     /**
     * Get the value of Id / id.
@@ -112,6 +117,18 @@ trait PageBase
     public function getActive()
     {
         $rtn = $this->data['active'];
+
+        return $rtn;
+    }
+
+    /**
+    * Get the value of ContentTypeId / content_type_id.
+    *
+    * @return int
+    */
+    public function getContentTypeId()
+    {
+        $rtn = $this->data['content_type_id'];
 
         return $rtn;
     }
@@ -238,6 +255,31 @@ trait PageBase
         $this->data['active'] = $value;
         $this->setModified('active');
     }
+
+    /**
+    * Set the value of ContentTypeId / content_type_id.
+    *
+    * Must not be null.
+    * @param $value int
+    */
+    public function setContentTypeId($value)
+    {
+        $this->validateInt('ContentTypeId', $value);
+
+        // As this is a foreign key, empty values should be treated as null:
+        if (empty($value)) {
+            $value = null;
+        }
+
+        $this->validateNotNull('ContentTypeId', $value);
+
+        if ($this->data['content_type_id'] === $value) {
+            return;
+        }
+
+        $this->data['content_type_id'] = $value;
+        $this->setModified('content_type_id');
+    }
     /**
     * Get the PageVersion model for this Page by Id.
     *
@@ -333,5 +375,53 @@ trait PageBase
     public function setParentObject(\Octo\Pages\Model\Page $value)
     {
         return $this->setParentId($value->getId());
+    }
+    /**
+    * Get the ContentType model for this Page by Id.
+    *
+    * @uses \Octo\Pages\Store\ContentTypeStore::getById()
+    * @uses \Octo\Pages\Model\ContentType
+    * @return \Octo\Pages\Model\ContentType
+    */
+    public function getContentType()
+    {
+        $key = $this->getContentTypeId();
+
+        if (empty($key)) {
+            return null;
+        }
+
+        return Factory::getStore('ContentType', 'Octo\Pages')->getById($key);
+    }
+
+    /**
+    * Set ContentType - Accepts an ID, an array representing a ContentType or a ContentType model.
+    *
+    * @param $value mixed
+    */
+    public function setContentType($value)
+    {
+        // Is this an instance of ContentType?
+        if ($value instanceof \Octo\Pages\Model\ContentType) {
+            return $this->setContentTypeObject($value);
+        }
+
+        // Is this an array representing a ContentType item?
+        if (is_array($value) && !empty($value['id'])) {
+            return $this->setContentTypeId($value['id']);
+        }
+
+        // Is this a scalar value representing the ID of this foreign key?
+        return $this->setContentTypeId($value);
+    }
+
+    /**
+    * Set ContentType - Accepts a ContentType model.
+    *
+    * @param $value \Octo\Pages\Model\ContentType
+    */
+    public function setContentTypeObject(\Octo\Pages\Model\ContentType $value)
+    {
+        return $this->setContentTypeId($value->getId());
     }
 }

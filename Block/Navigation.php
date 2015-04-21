@@ -6,7 +6,7 @@ use b8\Database;
 use Octo\Block;
 use Octo\Pages\Model\Page;
 use Octo\Store;
-use Octo\Template;
+use Octo\Html\Template;
 
 class Navigation extends Block
 {
@@ -27,10 +27,6 @@ class Navigation extends Block
 
     public function renderNow()
     {
-        if (array_key_exists('template', $this->templateParams)) {
-            $this->view = Template::getPublicTemplate('Block/Navigation/' . $this->templateParams['template']);
-        }
-
         $this->ancestors = $this->getAncestors();
 
         $this->allChildren = false;

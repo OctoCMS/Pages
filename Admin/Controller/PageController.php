@@ -16,7 +16,7 @@ use Octo\Pages\Model\PageVersion;
 use Octo\Store;
 use Octo\System\Model\ContentItem;
 use Octo\System\Model\Log;
-use Octo\Template;
+use Octo\Html\Template;
 
 class PageController extends Controller
 {
@@ -38,14 +38,13 @@ class PageController extends Controller
     public static function registerMenus(Menu $menu)
     {
         $pages = $menu->addRoot('Pages', '/page')->setIcon('sitemap');
-        $pages->addChild(new Menu\Item('Add Page', '/page/add'));
-
-        $manage = new Menu\Item('Manage Pages', '/page');
-        $manage->addChild(new Menu\Item('Edit Page', '/page/edit', true));
-        $manage->addChild(new Menu\Item('Delete Page', '/page/delete', true));
-        $manage->addChild(new Menu\Item('Save Page', '/page/save', true));
-        $manage->addChild(new Menu\Item('Publish Page', '/page/publish', true));
-        $pages->addChild($manage);
+        $pages->addChild(new Menu\Item('Search', '/page/autocomplete', true));
+        $pages->addChild(new Menu\Item('Create Homepage', '/page/create-homepage', true));
+        $pages->addChild(new Menu\Item('Add Page', '/page/add', true));
+        $pages->addChild(new Menu\Item('Edit Page', '/page/edit', true));
+        $pages->addChild(new Menu\Item('Delete Page', '/page/delete', true));
+        $pages->addChild(new Menu\Item('Save Page', '/page/save', true));
+        $pages->addChild(new Menu\Item('Publish Page', '/page/publish', true));
     }
 
     public function init()
@@ -62,6 +61,19 @@ class PageController extends Controller
         $this->setTitle('Manage Pages');
 
         $parentId = $this->getParam('parent', null);
+
+        $types = [];
+        foreach (Store::get('ContentType')->all() as $type) {
+            $thisTypes = [];
+
+            foreach ($type->getAllowedChildTypes() as $childType) {
+                $thisTypes[$childType->getId()] = ['name' => $childType->getName(), 'icon' => $childType->getIcon()];
+            }
+
+            $types[$type->getId()] = $thisTypes;
+        }
+
+        $this->view->types = $types;
 
         if (is_null($parentId)) {
             $parent = $this->pageStore->getHomepage();
@@ -86,10 +98,16 @@ class PageController extends Controller
         }
     }
 
-    public function add($parentId = null)
+    public function add($type = null, $parentId = null)
     {
         if ($this->request->getMethod() == 'POST') {
             return $this->createPage();
+        }
+
+        if (is_null($type) && is_null($parentId)) {
+            $this->response = new RedirectResponse();
+            $this->response->setHeader('Location', '/'.$this->config->get('site.admin_uri').'/page/create-homepage');
+            return;
         }
 
         $this->setTitle('Add Page');
@@ -98,10 +116,15 @@ class PageController extends Controller
         $form = $this->getPageDetailsForm('add');
 
         if ($form) {
-            $form->setValues(['parent_id' => $parentId]);
+            $form->setValues(['parent_id' => $parentId, 'type' => $type]);
         }
 
         $this->view->form = $form;
+    }
+
+    public function createHomepage()
+    {
+
     }
 
     protected function getPageDetailsForm($type = 'add')
@@ -141,10 +164,8 @@ class PageController extends Controller
         $field->setClass('select2');
         $fieldset->addField($field);
 
-        $field = Form\Element\Select::create('parent_id', 'Parent Page', true);
-        $field->setOptions($this->pageStore->getParentPageOptions());
-        $field->setClass('select2');
-        $fieldset->addField($field);
+        $fieldset->addField(Form\Element\Hidden::create('parent_id', '', false));
+        $fieldset->addField(Form\Element\Hidden::create('type', '', false));
 
         $field = Form\Element\Checkbox::create('active', 'Page Active?', false);
         $field->setCheckedValue(1);
@@ -183,6 +204,7 @@ class PageController extends Controller
 
         // Create an ID for the page, which will also create a temporary URI for it:
         $page->generateId();
+        $page->setContentTypeId($this->getParam('type'));
 
         /** @var \Octo\Pages\Model\Page $page */
         $page = $this->pageStore->saveByInsert($page);
@@ -247,12 +269,8 @@ class PageController extends Controller
         $this->setTitle($latest->getTitle(), 'Manage Pages');
         $this->addBreadcrumb($latest->getTitle(), '/page/edit/' . $pageId);
 
-
-        $pageBlocks = $this->parseTemplate($latest->getTemplate());
         $blockTypes = Block::getBlocks();
-
-        $hasEditableBlocks = false;
-
+        $contentDefinition = $page->getContentType()->getFullDefinition();
 
         $pageContent = [];
 
@@ -260,57 +278,44 @@ class PageController extends Controller
             $pageContent = json_decode($latest->getContentItem()->getContent(), true);
         }
 
-        $blockGroups = [];
+        $tabId = 0;
+        foreach ($contentDefinition as &$tab) {
+            $tab['idx'] = $tabId++;
+            foreach ($tab['properties'] as $key => &$property) {
+                if (array_key_exists($property['type'], $blockTypes)) {
+                    $property['handler'] = $blockTypes[$property['type']];
+                }
 
-        foreach ($pageBlocks as &$block) {
-            if (!isset($blockTypes[$block['type']])) {
-                $block['editable'] = false;
-                continue;
-            }
+                if (array_key_exists($key, $pageContent)) {
+                    $property['value'] = $pageContent[$key];
+                } else {
+                    $property['value'] = null;
+                }
 
-            $groupName = $blockTypes[$block['type']]['title'];
+                if (!array_key_exists('handler', $property) || !array_key_exists('editor', $property['handler'])) {
+                    $property['editable'] = false;
+                    $property['editor'] = null;
+                }
+                else {
+                    $property['editable'] = true;
 
-            if (!empty($block['group'])) {
-                $groupName = $block['group'];
-            }
+                    $edit = [
+                        'id' => $key,
+                        'name' => $tab['name'],
+                        'content' => $property['value'],
+                    ];
 
-            $safeGroupName = preg_replace('/([^a-zA-Z0-9])/', '', $groupName);
+                    $property['editor'] = $property['handler']['editor']($edit);
+                }
 
-            if (!array_key_exists($safeGroupName, $blockGroups)) {
-                $blockGroups[$safeGroupName] = ['name' => $groupName, 'haseditable' => false, 'blocks' => []];
-            }
 
-            $blockGroups[$safeGroupName]['blocks'][$block['id']] =& $block;
-            $blockTypes[$block['type']]['blocks'][] =& $block;
-
-            if (array_key_exists('editable', $block) && !$block['editable']) {
-                $block['editable'] = false;
-                continue;
-            }
-
-            if (isset($blockTypes[$block['type']]['editor']) && is_callable($blockTypes[$block['type']]['editor'])) {
-                $block['editable'] = true;
-            } else {
-                $block['editable'] = false;
-            }
-
-            if (array_key_exists($block['id'], $pageContent)) {
-                $block['content'] = $pageContent[$block['id']];
-            }
-
-            if ($block['editable']) {
-                $hasEditableBlocks = true;
-                $blockTypes[$block['type']]['haseditable'] = true;
-                $blockGroups[$safeGroupName]['haseditable'] = true;
-                $block['editor'] = $blockTypes[$block['type']]['editor']($block);
             }
         }
 
         $this->view->page = $page;
         $this->view->latest = $latest;
         $this->view->blocks = $blockTypes;
-        $this->view->blockGroups = $blockGroups;
-        $this->view->hasEditableBlocks = $hasEditableBlocks;
+        $this->view->contentDefinition = $contentDefinition;
         $this->view->templates = json_encode($this->getTemplates());
         $this->view->pages = json_encode($this->pageStore->getParentPageOptions());
 
@@ -359,7 +364,7 @@ class PageController extends Controller
     protected function parseTemplate($template)
     {
         $blocks = array();
-        $template = Template::getPublicTemplate($template);
+        $template = Template::load($template);
         $template->addFunction('block', function ($args) use (&$blocks) {
             $blocks[] = $args;
         });

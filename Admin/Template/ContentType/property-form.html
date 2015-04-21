@@ -1,0 +1,32 @@
+<form class="form new-property-form" data->
+    <section class="form-group  ">
+        <label class="">Name</label>
+        <input required class="form-control" name="name" value="{@property.name}">
+    </section>
+
+    <section class="form-group  ">
+        <label class="">Key (in camelCase)</label>
+        <input{if key} disabled{/if} required pattern="[a-z][a-zA-Z0-9]+" class="form-control" name="key" value="{@key}">
+    </section>
+
+    <section class="form-group  ">
+        <label class="">Description</label>
+        <input class="form-control" name="description" value="{@property.description}">
+    </section>
+
+    <section class="form-group  ">
+        <label class="">Type {@parent.key}</label>
+
+
+
+        <select required class="form-control select2" name="type">
+            {for blockTypes}
+            <option value="{@key}"{if property.type == key} selected{/if}>{@value.title}</option>
+            {/for}
+        </select>
+    </section>
+
+    <section class="form-group  ">
+        <button type="submit" class="btn btn-primary">Save</button>
+    </section>
+</form>

@@ -1,0 +1,47 @@
+<div class="row">
+    <div class="col-lg-12">
+        <a class="pull-right btn btn-success" href="/{@adminUri}/content-type/add">Add Content Type</a>
+    </div>
+</div>
+
+<br>
+
+<div class="box box-primary">
+    <div class="box-body no-padding">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Title</th>
+                <th>Parent</th>
+                <th width="170px">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {for items}
+            <tr>
+                <td><i class="fa fa-{@value.icon}"></i> {@value.name}</td>
+                <td><i class="fa fa-{@value.Parent.icon}"></i> {@value.Parent.name}</td>
+                <td>
+                    <div class="btn-group">
+                        {if canAccess(uri: "/content-type/edit")}
+                        <a class="btn btn-default btn-sm" href="/{@adminUri}/content-type/edit/{@value.id}">Edit</a>
+                        {/if}
+
+                        <a class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);"><span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+
+                            {if canAccess(uri: "/content-type/delete")}
+                            <li>
+                                <a href="/{@adminUri}/content-type/delete/{@value.id}" class="btn-delete">Delete</a>
+                            </li>
+                            {/if}
+
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            {/for}
+            </tbody>
+        </table>
+    </div>
+</div>

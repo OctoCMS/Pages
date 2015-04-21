@@ -34,6 +34,11 @@ class PageVersion extends Octo\Model
             return $content[$key];
         }
 
+        // Try and get from parent page:
+        if ($this->getPage()->getParentId()) {
+            return $this->getPage()->getParent()->getCurrentVersion()->getVariable($key);
+        }
+
         return null;
     }
 }
