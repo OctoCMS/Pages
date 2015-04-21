@@ -18,7 +18,8 @@ $(document).ready(function () {
 
 function attachEvents()
 {
-    $('.select2').select2();
+    $('select.select2, input.select2').select2('destroy');
+    $('select.select2, input.select2').select2();
 
     $('.add-tab').on('click', function (e) {
         e.preventDefault();

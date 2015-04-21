@@ -104,16 +104,11 @@ class PageController extends Controller
             return $this->createPage();
         }
 
-        if (is_null($type) && is_null($parentId)) {
-            $this->response = new RedirectResponse();
-            $this->response->setHeader('Location', '/'.$this->config->get('site.admin_uri').'/page/create-homepage');
-            return;
-        }
-
         $this->setTitle('Add Page');
         $this->addBreadcrumb('Add Page', '/page/add');
 
-        $form = $this->getPageDetailsForm('add');
+
+        $form = $this->getPageDetailsForm('add', (is_null($type) && is_null($parentId)));
 
         if ($form) {
             $form->setValues(['parent_id' => $parentId, 'type' => $type]);
@@ -122,12 +117,7 @@ class PageController extends Controller
         $this->view->form = $form;
     }
 
-    public function createHomepage()
-    {
-
-    }
-
-    protected function getPageDetailsForm($type = 'add')
+    protected function getPageDetailsForm($type = 'add', $isHomepage = false)
     {
         $form = new FormElement();
 
@@ -165,7 +155,29 @@ class PageController extends Controller
         $fieldset->addField($field);
 
         $fieldset->addField(Form\Element\Hidden::create('parent_id', '', false));
-        $fieldset->addField(Form\Element\Hidden::create('type', '', false));
+
+        if ($isHomepage) {
+            $types = [];
+
+            foreach (Store::get('ContentType')->all() as $cType) {
+                $types[$cType->getId()] = $cType->getName();
+            }
+
+            if (count($types) == 0) {
+                $this->errorMessage('You cannot create pages until you have created at least one content type.', true);
+
+                $this->response = new RedirectResponse();
+                $this->response->setHeader('Location', '/'.$this->config->get('site.admin_uri') . '/content-type');
+                return;
+            }
+
+            $field = Form\Element\Select::create('type', 'Page Type', false);
+            $field->setOptions($types);
+            $field->setClass('select2');
+            $fieldset->addField($field);
+        } else {
+            $fieldset->addField(Form\Element\Hidden::create('type', '', false));
+        }
 
         $field = Form\Element\Checkbox::create('active', 'Page Active?', false);
         $field->setCheckedValue(1);

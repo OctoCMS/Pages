@@ -62,7 +62,7 @@ class Text extends Block
             $content = preg_replace_callback($pattern, [$this, 'replaceFile'], $content);
         }
 
-        $this->view->content = $content;
+        return $content;
     }
 
     public function replaceFile($matches)
