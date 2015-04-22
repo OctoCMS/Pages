@@ -52,6 +52,11 @@ class Page extends Octo\Model
         return null;
     }
 
+    public function hasContent($key)
+    {
+        return $this->getCurrentVersion()->hasContent($key);
+    }
+
     public function hasChildren()
     {
         $store = Store::get('Page');
@@ -107,5 +112,28 @@ class Page extends Octo\Model
     {
         $content = $this->getLatestVersion()->getContentItem()->getContent();
         return $content;
+    }
+
+    public function getAncestors()
+    {
+        $ancestors = [];
+        $ancestors[] = $this;
+        $currentPage = $this;
+
+        while ($currentPage->getParentId()) {
+            $parent = $currentPage->getParent();
+            $ancestors[] = $parent;
+            $currentPage = $parent;
+        }
+
+        return array_reverse($ancestors);
+    }
+
+    public function getAncestor($level) {
+        $ancestors = $this->getAncestors();
+
+        if (array_key_exists($level, $ancestors)) {
+            return $ancestors[$level];
+        }
     }
 }
