@@ -56,6 +56,12 @@ class PageController extends Controller
     {
         $this->pageStore = Store::get('Page');
         $this->versionStore = Store::get('PageVersion');
+
+        Event::getEventManager()->registerListener('PublicTemplateLoaded', function (Template $template) {
+            $template->addFunction('getPages', function ($parentId, $limit = 15) {
+                return $this->getPages($parentId, $limit);
+            });
+        });
     }
 
     public function view()
@@ -68,22 +74,6 @@ class PageController extends Controller
         if (empty($this->page) || !($this->page instanceof Page)) {
             throw new HttpException\NotFoundException('No page found.');
         }
-
-        // Url extensions (for blocks that might support it):
-        /*
-        $this->uriExtension = substr($path, strlen($this->page->getUri()));
-
-        if (empty($this->uriExtension)) {
-            $this->uriExtension = null;
-        }
-        */
-
-        Event::getEventManager()->registerListener('PublicTemplateLoaded', function (Template $template) {
-            $template->addFunction('getPages', function ($parent, $limit = 10) {
-                $rtn = $this->pageStore->getByParentId($parent, ['order' => [['position', 'ASC']], 'limit' => $limit]);
-                return $rtn;
-            });
-        });
 
         try {
             $renderer = new Renderer($this->page, $this->page->getCurrentVersion(), $this->request);
@@ -110,5 +100,16 @@ class PageController extends Controller
 
         $renderer = new Renderer($this->page, $version, $this->request);
         return $renderer->render();
+    }
+
+    protected function getPages($parentId, $limit = 15)
+    {
+        $rtn = $this->pageStore->getByParentId($parentId, ['order' => [['position', 'ASC']], 'limit' => $limit]);
+
+        if (empty($rtn)) {
+            $rtn = [];
+        }
+
+        return $rtn;
     }
 }
