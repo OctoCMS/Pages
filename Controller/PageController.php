@@ -116,6 +116,25 @@ class PageController extends Controller
 
         $rtn = $this->pageStore->getByParentId($parentId, ['order' => [['position', 'ASC']], 'limit' => $limit, 'offset' => $offset]);
 
+        // Filter out unpublished, or expired items.
+        $rtn = $rtn->where(function (Page $item) {
+            $expiry = $item->getExpiryDate();
+            $publish = $item->getPublishDate();
+            $now = new \DateTime();
+
+
+
+            if (!empty($publish) && $publish > $now) {
+                return false;
+            }
+
+            if (!empty($expiry) && $expiry <= $now) {
+                return false;
+            }
+
+            return true;
+        });
+
         if (empty($rtn)) {
             $rtn = [];
         }

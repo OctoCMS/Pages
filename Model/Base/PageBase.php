@@ -34,12 +34,15 @@ trait PageBase
         $this->data['position'] = null;
         $this->getters['position'] = 'getPosition';
         $this->setters['position'] = 'setPosition';
-        $this->data['active'] = null;
-        $this->getters['active'] = 'getActive';
-        $this->setters['active'] = 'setActive';
         $this->data['content_type_id'] = null;
         $this->getters['content_type_id'] = 'getContentTypeId';
         $this->setters['content_type_id'] = 'setContentTypeId';
+        $this->data['publish_date'] = null;
+        $this->getters['publish_date'] = 'getPublishDate';
+        $this->setters['publish_date'] = 'setPublishDate';
+        $this->data['expiry_date'] = null;
+        $this->getters['expiry_date'] = 'getExpiryDate';
+        $this->setters['expiry_date'] = 'setExpiryDate';
 
         // Foreign keys:
         $this->getters['CurrentVersion'] = 'getCurrentVersion';
@@ -110,18 +113,6 @@ trait PageBase
     }
 
     /**
-    * Get the value of Active / active.
-    *
-    * @return int
-    */
-    public function getActive()
-    {
-        $rtn = $this->data['active'];
-
-        return $rtn;
-    }
-
-    /**
     * Get the value of ContentTypeId / content_type_id.
     *
     * @return int
@@ -129,6 +120,38 @@ trait PageBase
     public function getContentTypeId()
     {
         $rtn = $this->data['content_type_id'];
+
+        return $rtn;
+    }
+
+    /**
+    * Get the value of PublishDate / publish_date.
+    *
+    * @return \DateTime
+    */
+    public function getPublishDate()
+    {
+        $rtn = $this->data['publish_date'];
+
+        if (!empty($rtn)) {
+            $rtn = new \DateTime($rtn);
+        }
+
+        return $rtn;
+    }
+
+    /**
+    * Get the value of ExpiryDate / expiry_date.
+    *
+    * @return \DateTime
+    */
+    public function getExpiryDate()
+    {
+        $rtn = $this->data['expiry_date'];
+
+        if (!empty($rtn)) {
+            $rtn = new \DateTime($rtn);
+        }
 
         return $rtn;
     }
@@ -238,25 +261,6 @@ trait PageBase
     }
 
     /**
-    * Set the value of Active / active.
-    *
-    * Must not be null.
-    * @param $value int
-    */
-    public function setActive($value)
-    {
-        $this->validateInt('Active', $value);
-        $this->validateNotNull('Active', $value);
-
-        if ($this->data['active'] === $value) {
-            return;
-        }
-
-        $this->data['active'] = $value;
-        $this->setModified('active');
-    }
-
-    /**
     * Set the value of ContentTypeId / content_type_id.
     *
     * Must not be null.
@@ -279,6 +283,40 @@ trait PageBase
 
         $this->data['content_type_id'] = $value;
         $this->setModified('content_type_id');
+    }
+
+    /**
+    * Set the value of PublishDate / publish_date.
+    *
+    * @param $value \DateTime
+    */
+    public function setPublishDate($value)
+    {
+        $this->validateDate('PublishDate', $value);
+
+        if ($this->data['publish_date'] === $value) {
+            return;
+        }
+
+        $this->data['publish_date'] = $value;
+        $this->setModified('publish_date');
+    }
+
+    /**
+    * Set the value of ExpiryDate / expiry_date.
+    *
+    * @param $value \DateTime
+    */
+    public function setExpiryDate($value)
+    {
+        $this->validateDate('ExpiryDate', $value);
+
+        if ($this->data['expiry_date'] === $value) {
+            return;
+        }
+
+        $this->data['expiry_date'] = $value;
+        $this->setModified('expiry_date');
     }
     /**
     * Get the PageVersion model for this Page by Id.

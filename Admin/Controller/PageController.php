@@ -179,9 +179,12 @@ class PageController extends Controller
             $fieldset->addField(Form\Element\Hidden::create('type', '', false));
         }
 
-        $field = Form\Element\Checkbox::create('active', 'Page Active?', false);
-        $field->setCheckedValue(1);
-        $field->setValue(1);
+        $field = Form\Element\Text::create('publish_date', 'Publish Date', false);
+        $field->setClass('datetime-picker');
+        $fieldset->addField($field);
+
+        $field = Form\Element\Text::create('expiry_date', 'Expiry Date', false);
+        $field->setClass('datetime-picker');
         $fieldset->addField($field);
 
 
@@ -217,6 +220,9 @@ class PageController extends Controller
         // Create an ID for the page, which will also create a temporary URI for it:
         $page->generateId();
         $page->setContentTypeId($this->getParam('type'));
+
+        $page->setPublishDate($this->getParam('publish_date', null));
+        $page->setExpiryDate($this->getParam('expiry_date', null));
 
         /** @var \Octo\Pages\Model\Page $page */
         $page = $this->pageStore->saveByInsert($page);
@@ -335,6 +341,17 @@ class PageController extends Controller
         $form->setValues($page->getDataArray());
         $form->setValues($latest->getDataArray());
 
+        if ($page->getPublishDate()) {
+            var_dump('Has Publish');
+            $form->setValues(['publish_date' => $page->getPublishDate()->format('Y-m-d H:i')]);
+        }
+
+        if ($page->getExpiryDate()) {
+            var_dump('Has Expiry');
+
+            $form->setValues(['expiry_date' => $page->getExpiryDate()->format('Y-m-d H:i')]);
+        }
+
         // Prevent users from changing the parent of the homepage:
         if (is_null($page->getParentId())) {
             $form->getChild('fieldset')->removeChild('parent_id');
@@ -445,10 +462,12 @@ class PageController extends Controller
             /** @var \Octo\Pages\Model\Page $page */
             $page = $this->pageStore->getById($pageId);
 
-            if (!array_key_exists('active', $pageData) || $pageData['active'] == 0) {
-                $page->setActive(0);
-            } else {
-                $page->setActive(1);
+            if (array_key_exists('publish_date', $pageData)) {
+                $page->setPublishDate(empty($pageData['publish_date']) ? null : $pageData['publish_date']);
+            }
+
+            if (array_key_exists('publish_date', $pageData)) {
+                $page->setExpiryDate(empty($pageData['expiry_date']) ? null : $pageData['expiry_date']);
             }
 
             $newParent = $pageData['parent_id'];
