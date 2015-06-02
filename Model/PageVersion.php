@@ -41,4 +41,10 @@ class PageVersion extends Octo\Model
 
         return null;
     }
+
+    public function hasContent($key)
+    {
+        $content = json_decode($this->getContentItem()->getContent(), true);
+        return !empty($content[$key]);
+    }
 }

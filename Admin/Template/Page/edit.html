@@ -94,6 +94,10 @@
         $('#details select:not(.skip-autosave)').on('change', function () {
             editor.triggerSaveDetails();
         });
+
+        $('#details .datetime-picker').on('dp.change', function () {
+            editor.triggerSaveDetails();
+        });
     });
 
 

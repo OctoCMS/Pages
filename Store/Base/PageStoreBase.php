@@ -106,7 +106,7 @@ trait PageStoreBase
      * @param array $options Limits, offsets, etc.
      * @param string $useConnection Connection type to use.
      * @throws StoreException
-     * @return Page[]
+     * @return PageCollection
      */
     public function getByParentId($value, $options = [], $useConnection = 'read')
     {
@@ -160,7 +160,7 @@ trait PageStoreBase
      * @param array $options Limits, offsets, etc.
      * @param string $useConnection Connection type to use.
      * @throws StoreException
-     * @return Page[]
+     * @return PageCollection
      */
     public function getByCurrentVersionId($value, $options = [], $useConnection = 'read')
     {
@@ -242,7 +242,7 @@ trait PageStoreBase
      * @param array $options Limits, offsets, etc.
      * @param string $useConnection Connection type to use.
      * @throws StoreException
-     * @return Page[]
+     * @return PageCollection
      */
     public function getByContentTypeId($value, $options = [], $useConnection = 'read')
     {

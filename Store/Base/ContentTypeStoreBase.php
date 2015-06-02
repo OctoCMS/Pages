@@ -106,7 +106,7 @@ trait ContentTypeStoreBase
      * @param array $options Limits, offsets, etc.
      * @param string $useConnection Connection type to use.
      * @throws StoreException
-     * @return ContentType[]
+     * @return ContentTypeCollection
      */
     public function getByParentId($value, $options = [], $useConnection = 'read')
     {
