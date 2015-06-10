@@ -88,6 +88,7 @@ class PageController extends Controller
 
             $pages = [$parent];
             $this->view->pages = $pages;
+            $this->view->open = $this->getParam('open', []);
         } else {
             $pages = $this->pageStore->getByParentId($parentId, ['order' => [['position', 'ASC']]]);
 
@@ -342,13 +343,10 @@ class PageController extends Controller
         $form->setValues($latest->getDataArray());
 
         if ($page->getPublishDate()) {
-            var_dump('Has Publish');
             $form->setValues(['publish_date' => $page->getPublishDate()->format('Y-m-d H:i')]);
         }
 
         if ($page->getExpiryDate()) {
-            var_dump('Has Expiry');
-
             $form->setValues(['expiry_date' => $page->getExpiryDate()->format('Y-m-d H:i')]);
         }
 
@@ -506,7 +504,9 @@ class PageController extends Controller
 
         $page->setCurrentVersion($latest);
         $page->generateUri();
-        $this->pageStore->save($page);
+
+        /** @var \Octo\Pages\Model\Page $page */
+        $page = $this->pageStore->save($page);
 
         $content = $latest->getContentItem()->getContent();
 
@@ -516,7 +516,20 @@ class PageController extends Controller
         $this->successMessage($latest->getTitle() . ' has been published!', true);
         $this->response = new \b8\Http\Response\RedirectResponse($this->response);
 
-        $this->response->setHeader('Location', '/'.$this->config->get('site.admin_uri').'/page');
+        $ancestors = $page->getAncestors();
+
+        $open = [];
+        foreach ($ancestors as $ancestor) {
+            if (!$ancestor->getParentId() || $ancestor->getId() == $page->getId()) {
+                continue;
+            }
+
+            $open[] = 'open[]=' . $ancestor->getId();
+        }
+
+        $append = implode('&amp;', $open);
+
+        $this->response->setHeader('Location', '/'.$this->config->get('site.admin_uri').'/page?'.$append);
     }
 
     public function duplicate($pageId)

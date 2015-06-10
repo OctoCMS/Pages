@@ -114,6 +114,9 @@ class Page extends Octo\Model
         return $content;
     }
 
+    /**
+     * @return Page[]
+     */
     public function getAncestors()
     {
         $ancestors = [];

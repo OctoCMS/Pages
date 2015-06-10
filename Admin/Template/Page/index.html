@@ -41,13 +41,20 @@
     </div>
 
 <script>
-
+    window.openChildren = {@open.asJson};
+    window.opened = 0;
     window.allowedChildTypes = {@types.asJson};
 
     $(document).ready(function () {
         registerEvents();
-        loadChildren($('.pageview li'));
+        loadChildren($('.pageview li'), openNextChild);
     });
+
+    function openNextChild() {
+        if (window.openChildren[window.opened]) {
+            loadChildren($('.page-' + window.openChildren[window.opened]), openNextChild);
+        }
+    }
 
     function registerEvents()
     {
@@ -158,7 +165,7 @@
         });
     }
 
-    function loadChildren(parent)
+    function loadChildren(parent, cb)
     {
         var parentId = parent.data('id');
         parent.find('.open-arrow').removeClass('fa-caret-right').addClass('fa-caret-down');
@@ -172,6 +179,7 @@
 
             $('.open-arrow').off('click');
             registerEvents();
+            cb();
         });
     }
 
