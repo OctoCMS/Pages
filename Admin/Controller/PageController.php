@@ -42,9 +42,13 @@ class PageController extends Controller
         $pages->addChild(new Menu\Item('Create Homepage', '/page/create-homepage', true));
         $pages->addChild(new Menu\Item('Add Page', '/page/add', true));
         $pages->addChild(new Menu\Item('Edit Page', '/page/edit', true));
+        $pages->addChild(new Menu\Item('Edit Page (Autosave)', '/page/edit-ping', true));
+        $pages->addChild(new Menu\Item('Duplicate Page', '/page/duplicate', true));
         $pages->addChild(new Menu\Item('Delete Page', '/page/delete', true));
         $pages->addChild(new Menu\Item('Save Page', '/page/save', true));
         $pages->addChild(new Menu\Item('Publish Page', '/page/publish', true));
+        $pages->addChild(new Menu\Item('Page Metadata', '/page/metadata', true));
+        $pages->addChild(new Menu\Item('Sort Pages', '/page/sort', true));
     }
 
     public function init()
