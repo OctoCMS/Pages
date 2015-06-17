@@ -456,11 +456,6 @@ class PageController extends Controller
         $pageData = $this->getParam('page', null);
 
         if (!is_null($pageData)) {
-
-            if (empty($pageData['image_id'])) {
-                unset($pageData['image_id']);
-            }
-
             /** @var \Octo\Pages\Model\Page $page */
             $page = $this->pageStore->getById($pageId);
 
@@ -483,6 +478,12 @@ class PageController extends Controller
             $this->pageStore->saveByUpdate($page);
 
             $latest = $this->pageStore->getLatestVersion($page);
+
+            if (array_key_exists('image_id', $pageData) && empty($pageData['image_id'])) {
+                $latest->setImageId(null);
+                unset($pageData['image_id']);
+            }
+
             $latest->setValues($pageData);
 
             $latest->setUpdatedDate(new \DateTime());
@@ -508,6 +509,10 @@ class PageController extends Controller
 
         $page->setCurrentVersion($latest);
         $page->generateUri();
+
+        if (!$page->getPublishDate()) {
+            $page->setPublishDate(new \DateTime());
+        }
 
         /** @var \Octo\Pages\Model\Page $page */
         $page = $this->pageStore->save($page);

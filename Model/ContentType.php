@@ -17,12 +17,12 @@ class ContentType extends Octo\Model
     /**
      * @return array
      */
-    public function getFullDefinition()
+    public function getFullDefinition($inherited = false)
     {
         $rtn = [];
 
         if ($this->getParentId()) {
-            $rtn = $this->getParent()->getFullDefinition();
+            $rtn = $this->getParent()->getFullDefinition(true);
         }
 
         $def = json_decode($this->getDefinition(), true);
@@ -36,7 +36,10 @@ class ContentType extends Octo\Model
                 ];
             }
 
-            $rtn[$tab['name']]['properties'] = array_merge($rtn[$tab['name']]['properties'], $tab['properties']);
+            foreach ($tab['properties'] as $key => $value) {
+                $rtn[$tab['name']]['properties'][$key] = $tab['properties'][$key];
+                $rtn[$tab['name']]['properties'][$key]['inherited'] = $inherited;
+            }
         }
 
         return $rtn;

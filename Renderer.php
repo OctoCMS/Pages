@@ -76,7 +76,7 @@ class Renderer
             }
 
             foreach ($tab['properties'] as $prop => $value) {
-                $content = $this->version->getVariable($prop);
+                $content = $this->version->getVariable($prop, $value['inherited']);
 
                 if (empty($content)) {
                     $content = [];

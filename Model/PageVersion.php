@@ -19,7 +19,7 @@ class PageVersion extends Octo\Model
         return $this->getVariable($key);
     }
 
-    public function getVariable($key)
+    public function getVariable($key, $recursive = false)
     {
         // Try page properties:
         if (array_key_exists($key, $this->getters)) {
@@ -35,8 +35,8 @@ class PageVersion extends Octo\Model
         }
 
         // Try and get from parent page:
-        if ($this->getPage()->getParentId()) {
-            return $this->getPage()->getParent()->getCurrentVersion()->getVariable($key);
+        if ($recursive && $this->getPage()->getParentId()) {
+            return $this->getPage()->getParent()->getCurrentVersion()->getVariable($key, true);
         }
 
         return null;

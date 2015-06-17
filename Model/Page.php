@@ -31,7 +31,7 @@ class Page extends Octo\Model
         return $this->getVariable($key);
     }
 
-    public function getVariable($key)
+    public function getVariable($key, $recursive = false)
     {
         // Try local variables:
         if (array_key_exists($key, $this->getters)) {
@@ -39,14 +39,14 @@ class Page extends Octo\Model
             return $this->{$getter}();
         }
 
-        $rtn = $this->getCurrentVersion()->getVariable($key);
+        $rtn = $this->getCurrentVersion()->getVariable($key, false);
         if (!is_null($rtn)) {
             return $rtn;
         }
 
         // Try and get from parent page:
-        if ($this->getParentId()) {
-            return $this->getParent()->getVariable($key);
+        if ($recursive && $this->getParentId()) {
+            return $this->getParent()->getVariable($key, true);
         }
 
         return null;
