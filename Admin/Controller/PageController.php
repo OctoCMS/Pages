@@ -42,9 +42,13 @@ class PageController extends Controller
         $pages->addChild(new Menu\Item('Create Homepage', '/page/create-homepage', true));
         $pages->addChild(new Menu\Item('Add Page', '/page/add', true));
         $pages->addChild(new Menu\Item('Edit Page', '/page/edit', true));
+        $pages->addChild(new Menu\Item('Edit Page (Autosave)', '/page/edit-ping', true));
+        $pages->addChild(new Menu\Item('Duplicate Page', '/page/duplicate', true));
         $pages->addChild(new Menu\Item('Delete Page', '/page/delete', true));
         $pages->addChild(new Menu\Item('Save Page', '/page/save', true));
         $pages->addChild(new Menu\Item('Publish Page', '/page/publish', true));
+        $pages->addChild(new Menu\Item('Page Metadata', '/page/metadata', true));
+        $pages->addChild(new Menu\Item('Sort Pages', '/page/sort', true));
     }
 
     public function init()
@@ -452,11 +456,6 @@ class PageController extends Controller
         $pageData = $this->getParam('page', null);
 
         if (!is_null($pageData)) {
-
-            if (empty($pageData['image_id'])) {
-                unset($pageData['image_id']);
-            }
-
             /** @var \Octo\Pages\Model\Page $page */
             $page = $this->pageStore->getById($pageId);
 
@@ -479,6 +478,12 @@ class PageController extends Controller
             $this->pageStore->saveByUpdate($page);
 
             $latest = $this->pageStore->getLatestVersion($page);
+
+            if (array_key_exists('image_id', $pageData) && empty($pageData['image_id'])) {
+                $latest->setImageId(null);
+                unset($pageData['image_id']);
+            }
+
             $latest->setValues($pageData);
 
             $latest->setUpdatedDate(new \DateTime());
@@ -504,6 +509,10 @@ class PageController extends Controller
 
         $page->setCurrentVersion($latest);
         $page->generateUri();
+
+        if (!$page->getPublishDate()) {
+            $page->setPublishDate(new \DateTime());
+        }
 
         /** @var \Octo\Pages\Model\Page $page */
         $page = $this->pageStore->save($page);

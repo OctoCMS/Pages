@@ -51,8 +51,11 @@
     });
 
     function openNextChild() {
-        if (window.openChildren[window.opened]) {
-            loadChildren($('.page-' + window.openChildren[window.opened]), openNextChild);
+        var parent = window.openChildren[window.opened++];
+
+        if (parent) {
+            loadChildren($('.page-' + parent), openNextChild);
+
         }
     }
 
