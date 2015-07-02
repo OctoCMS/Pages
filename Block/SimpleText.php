@@ -49,6 +49,6 @@ class SimpleText extends Block
 
     public function renderNow()
     {
-        $this->view->content = $this->getContent('content', '');
+        return $this->getContent('content', '');
     }
 }
