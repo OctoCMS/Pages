@@ -75,6 +75,10 @@
             editor.triggerSaveContent($(this).parents('form'));
         });
 
+        $('.block-editor textarea').on('change', function () {
+            editor.triggerSaveContent($(this).parents('form'));
+        });
+
         $('.block-editor input').on('autosave', function () {
             editor.triggerSaveContent($(this).parents('form'));
         });

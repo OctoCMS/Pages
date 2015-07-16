@@ -550,6 +550,9 @@ class PageController extends Controller
         $newPage = new Page();
         $newPage->setParentId($page->getParentId());
         $newPage->setPosition($page->getPosition() + 1);
+        $newPage->setContentType($page->getContentType());
+        $newPage->setExpiryDate($page->getExpiryDate());
+        $newPage->setPublishDate(null);
         $newPage->generateId();
 
         $newPage = $this->pageStore->saveByInsert($newPage);
