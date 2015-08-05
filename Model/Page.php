@@ -64,6 +64,11 @@ class Page extends Octo\Model
         return $count ? true : false;
     }
 
+    public function getChildren()
+    {
+        $store = Store::get('Page');
+        return $store->getByParentId($this->getId());
+    }
 
     public function generateId()
     {

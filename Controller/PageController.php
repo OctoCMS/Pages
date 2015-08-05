@@ -56,14 +56,6 @@ class PageController extends Controller
     {
         $this->pageStore = Store::get('Page');
         $this->versionStore = Store::get('PageVersion');
-
-        Event::getEventManager()->registerListener('PublicTemplateLoaded', function (Template $template) {
-            $template->addFunction('getPages', function () {
-                return call_user_func_array([$this, 'getPages'], func_get_args());
-            });
-
-            $template->request = $this->request;
-        });
     }
 
     public function view()
@@ -102,43 +94,5 @@ class PageController extends Controller
 
         $renderer = new Renderer($this->page, $version, $this->request);
         return $renderer->render();
-    }
-
-    protected function getPages($parentId, $limit = 15)
-    {
-        $page = $this->getParam('p', null);
-
-        if (!empty($page)) {
-            $offset = $page * $limit;
-        } else {
-            $offset = 0;
-        }
-
-        $rtn = $this->pageStore->getByParentId($parentId, ['order' => [['position', 'ASC']], 'limit' => $limit, 'offset' => $offset]);
-
-        // Filter out unpublished, or expired items.
-        $rtn = $rtn->where(function (Page $item) {
-            $expiry = $item->getExpiryDate();
-            $publish = $item->getPublishDate();
-            $now = new \DateTime();
-
-
-
-            if (!empty($publish) && $publish > $now) {
-                return false;
-            }
-
-            if (!empty($expiry) && $expiry <= $now) {
-                return false;
-            }
-
-            return true;
-        });
-
-        if (empty($rtn)) {
-            $rtn = [];
-        }
-
-        return $rtn;
     }
 }
