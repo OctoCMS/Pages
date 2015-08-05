@@ -10,7 +10,7 @@ class RegisterRoutes extends Listener
 {
     public function registerListeners(Manager $manager)
     {
-        $manager->registerListener('RegisterRoutes', function (Router $router) {
+        $manager->registerListener('BackupRoutes', function (Router $router) {
             $router->register('/', ['controller' => 'Page', 'action' => 'View']);
         });
     }
