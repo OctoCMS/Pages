@@ -7,6 +7,7 @@ use Octo\Event\Listener;
 use Octo\Event\Manager;
 use Octo\Store;
 use Octo\Html\Template;
+use Octo\Pages\Model\Page;
 
 class TemplateFunctions extends Listener
 {
