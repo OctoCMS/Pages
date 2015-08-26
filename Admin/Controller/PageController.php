@@ -356,7 +356,7 @@ class PageController extends Controller
 
         // Prevent users from changing the parent of the homepage:
         if (is_null($page->getParentId())) {
-            $form->getChild('fieldset')->removeChild('parent_id');
+            $form->getChild('element-fieldset')->removeChild('parent_id');
         }
 
         $this->view->pageDetailsForm = $form;
