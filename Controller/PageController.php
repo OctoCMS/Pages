@@ -63,7 +63,7 @@ class PageController extends Controller
         $path = $this->request->getPath();
 
         // Try and load the page:
-        $this->page = $this->pageStore->getUriBestMatch($path);
+        $this->page = $this->pageStore->getByUri($path);
 
         if (empty($this->page) || !($this->page instanceof Page)) {
             throw new HttpException\NotFoundException('No page found.');
