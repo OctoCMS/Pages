@@ -90,6 +90,14 @@ class PagesInstallMigration extends AbstractMigration
         }
 
         $table->save();
+
+        $table->changeColumn('name', 'string', ['limit' => 100, 'null' => false, 'default' => 'Content']);
+        $table->changeColumn('parent_id', 'integer', ['signed' => false, 'null' => true, 'default' => null]);
+        $table->changeColumn('allowed_children', 'string', ['limit' => 1000, 'null' => true, 'default' => null]);
+        $table->changeColumn('definition', 'text', ['limit' => MysqlAdapter::TEXT_MEDIUM, 'null' => false]);
+        $table->changeColumn('icon', 'string', ['limit' => 30, 'null' => true, 'default' => null]);
+
+        $table->save();
     }
 
     protected function createPage()
@@ -132,6 +140,16 @@ class PagesInstallMigration extends AbstractMigration
         if (!$table->hasIndex('uri')) {
             $table->addIndex('uri', ['unique' => false]);
         }
+
+        $table->save();
+
+        $table->changeColumn('parent_id', 'char', ['limit' => 5, 'null' => true, 'default' => null]);
+        $table->changeColumn('current_version_id', 'integer', ['signed' => false, 'null' => true, 'default' => null]);
+        $table->changeColumn('content_type_id', 'integer', ['signed' => false, 'null' => false, 'default' => 1]);
+        $table->changeColumn('uri', 'string', ['limit' => 500, 'null' => false]);
+        $table->changeColumn('position', 'integer', ['signed' => false, 'null' => false, 'default' => 0]);
+        $table->changeColumn('publish_date', 'datetime', ['null' => true, 'default' => null]);
+        $table->changeColumn('expiry_date', 'datetime', ['null' => true, 'default' => null]);
 
         $table->save();
     }
@@ -188,6 +206,20 @@ class PagesInstallMigration extends AbstractMigration
         if (!$table->hasColumn('image_id')) {
             $table->addColumn('image_id', 'char', ['limit' => 32, 'null' => true, 'default' => null]);
         }
+
+        $table->save();
+
+        $table->changeColumn('page_id', 'char', ['limit' => 5, 'null' => false]);
+        $table->changeColumn('version', 'integer', ['signed' => false, 'null' => false]);
+        $table->changeColumn('title', 'string', ['limit' => 250, 'null' => true, 'default' => null]);
+        $table->changeColumn('short_title', 'string', ['limit' => 50, 'null' => true, 'default' => null]);
+        $table->changeColumn('description', 'string', ['limit' => 250, 'null' => true, 'default' => null]);
+        $table->changeColumn('meta_description', 'string', ['limit' => 250, 'null' => true, 'default' => null]);
+        $table->changeColumn('content_item_id', 'char', ['limit' => 32, 'null' => true, 'default' => null]);
+        $table->changeColumn('user_id', 'integer', ['signed' => false, 'null' => true, 'default' => null]);
+        $table->changeColumn('updated_date', 'datetime', ['null' => false]);
+        $table->changeColumn('template', 'string', ['limit' => 250, 'null' => false]);
+        $table->changeColumn('image_id', 'char', ['limit' => 32, 'null' => true, 'default' => null]);
 
         $table->save();
     }
