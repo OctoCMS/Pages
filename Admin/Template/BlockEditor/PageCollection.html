@@ -28,7 +28,7 @@
     $('.modal-footer button').attr('disabled', true);
 
     $.ajax({
-        url: '/'+window.adminUri+'/page/metadata',
+        url: window.adminUri + '/page/metadata',
         data: {
             q: JSON.stringify(blockContent.pages)
         },

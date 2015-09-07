@@ -17,7 +17,7 @@
                 <tr>
                     <td>
                         {if canAccess(uri: "/page/edit")}
-                        <a href="/{@adminUri}/page/edit/{@item.id}">{@item.title}</a>
+                        <a href="{@adminUri}/page/edit/{@item.id}">{@item.title}</a>
                         {/if}
                         {ifnot canAccess(uri: "/page/edit")}{@item.title}{/ifnot}
                     </td>

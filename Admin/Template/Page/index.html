@@ -96,7 +96,7 @@
 
             create.find('.box-title').text('Create an item under ' + title);
             options.find('.box-title').text(title);
-            options.find('.btn-edit').attr('href', '/{@adminUri}/page/edit/' + page.data('id')).find('span').text('Edit ' + title);
+            options.find('.btn-edit').attr('href', '{@adminUri}/page/edit/' + page.data('id')).find('span').text('Edit ' + title);
 
             if (page.data('root')) {
                 options.find('.btn-delete').hide();
@@ -106,8 +106,8 @@
             } else {
                 options.find('.btn-delete').show();
                 options.find('.btn-duplicate').show();
-                options.find('.btn-delete').attr('href', '/{@adminUri}/page/delete/' + page.data('id')).find('span').text('Delete ' + title);
-                options.find('.btn-duplicate').attr('href', '/{@adminUri}/page/duplicate/' + page.data('id')).find('span').text('Duplicate ' + title);
+                options.find('.btn-delete').attr('href', '{@adminUri}/page/delete/' + page.data('id')).find('span').text('Delete ' + title);
+                options.find('.btn-duplicate').attr('href', '{@adminUri}/page/duplicate/' + page.data('id')).find('span').text('Duplicate ' + title);
             }
 
             options.fadeIn();
@@ -127,7 +127,7 @@
 
                     var btn = $('<a class="btn btn-block btn-default btn-create"></a>');
                     btn.html('<i class="fa fa-'+typeIcon+'"></i> '+typeName);
-                    btn.attr('href', '/{@adminUri}/page/add/' +typeId+'/'+page.data('id'));
+                    btn.attr('href', '{@adminUri}/page/add/' +typeId+'/'+page.data('id'));
                     btns.append(btn);
 
                 }
@@ -176,7 +176,7 @@
         var childList = $('<ul></ul>').hide();
         parent.append(childList);
 
-        $.get('/{@adminUri}/page?parent=' + parentId, function (data) {
+        $.get('{@adminUri}/page?parent=' + parentId, function (data) {
             childList.append(data);
             childList.slideDown('fast');
 
@@ -190,7 +190,7 @@
     {
         $('.pace').removeClass('hide');
 
-        $.post('/' + window.adminUri + '/page/sort', {positions: items}, function () {
+        $.post(window.adminUri + '/page/sort', {positions: items}, function () {
             $('.pace').addClass('hide');
         });
     }

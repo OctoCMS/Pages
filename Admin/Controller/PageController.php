@@ -84,10 +84,7 @@ class PageController extends Controller
 
             if (is_null($parent)) {
                 $this->successMessage('Create your first page using the form below.', true);
-
-                $this->response = new RedirectResponse();
-                $this->response->setHeader('Location', '/'.$this->config->get('site.admin_uri').'/page/add');
-                return;
+                $this->redirect('/page/add');
             }
 
             $pages = [$parent];
@@ -128,7 +125,7 @@ class PageController extends Controller
 
         if ($type == 'add') {
             $form->setMethod('POST');
-            $form->setAction('/' . $this->config->get('site.admin_uri') . '/page/add');
+            $form->setAction($this->config->get('site.full_admin_url') . '/page/add');
         }
 
         $form->setClass('smart-form');
@@ -148,10 +145,7 @@ class PageController extends Controller
 
         if (!count($templates)) {
             $this->errorMessage('You cannot create pages until you have created at least one page template.', true);
-
-            $this->response = new RedirectResponse();
-            $this->response->setHeader('Location', '/'.$this->config->get('site.admin_uri'));
-            return;
+            $this->redirect('/');
         }
 
         $field = Form\Element\Select::create('template', 'Template', true);
@@ -170,10 +164,7 @@ class PageController extends Controller
 
             if (count($types) == 0) {
                 $this->errorMessage('You cannot create pages until you have created at least one content type.', true);
-
-                $this->response = new RedirectResponse();
-                $this->response->setHeader('Location', '/'.$this->config->get('site.admin_uri') . '/content-type');
-                return;
+                $this->redirect('/content-type');
             }
 
             $field = Form\Element\Select::create('type', 'Page Type', false);
@@ -263,12 +254,11 @@ class PageController extends Controller
         $page->generateUri();
         $this->pageStore->save($page);
 
-        $uri = '/'.$this->config->get('site.admin_uri').'/page/edit/' . $page->getId();
+        $uri = $this->config->get('site.full_admin_url').'/page/edit/' . $page->getId();
 
         Log::create(Log::TYPE_CREATE, 'page', $version->getTitle(), $page->getId(), $uri);
 
-        $this->response = new RedirectResponse();
-        $this->response->setHeader('Location', $uri);
+        $this->redirect('/page/edit/' . $page->getId());
     }
 
     public function edit($pageId)
@@ -426,7 +416,7 @@ class PageController extends Controller
             $page = $this->pageStore->getById($pageId);
             $latest = $this->pageStore->getLatestVersion($page);
 
-            $uri = '/'.$this->config->get('site.admin_uri').'/page/edit/' . $page->getId();
+            $uri = $this->config->get('site.full_admin_url').'/page/edit/' . $page->getId();
 
             Log::create(Log::TYPE_EDIT, 'page', $latest->getTitle(), $page->getId(), $uri);
 
@@ -501,7 +491,7 @@ class PageController extends Controller
         $latest = $this->pageStore->getLatestVersion($page);
         $latest->setUpdatedDate(new \DateTime());
 
-        $uri = '/'.$this->config->get('site.admin_uri').'/page/edit/' . $page->getId();
+        $uri = $this->config->get('site.full_admin_url').'/page/edit/' . $page->getId();
 
         Log::create(Log::TYPE_PUBLISH, 'page', $latest->getTitle(), $page->getId(), $uri);
 
@@ -536,9 +526,7 @@ class PageController extends Controller
             $open[] = 'open[]=' . $ancestor->getId();
         }
 
-        $append = implode('&amp;', $open);
-
-        $this->response->setHeader('Location', '/'.$this->config->get('site.admin_uri').'/page?'.$append);
+        $this->redirect('/page?' . implode('&amp;', $open));
     }
 
     public function duplicate($pageId)
@@ -574,21 +562,18 @@ class PageController extends Controller
         $newPage->generateUri();
         $newPage = $this->pageStore->saveByUpdate($newPage);
 
-        header('Location: /'.$this->config->get('site.admin_uri').'/page/edit/' . $newPage->getId());
-        die;
+        $this->redirect('/page/edit/' . $newPage->getId());
     }
 
     public function delete($pageId)
     {
         $page = $this->pageStore->getById($pageId);
-        $this->successMessage($page->getCurrentVersion()->getShortTitle() . ' has been deleted.', true);
+        $this->pageStore->delete($page);
 
         Log::create(Log::TYPE_DELETE, 'page', $page->getCurrentVersion()->getTitle(), $page->getId());
 
-        $this->pageStore->delete($page);
-
-        $this->response = new RedirectResponse();
-        $this->response->setHeader('Location', '/'.$this->config->get('site.admin_uri').'/page');
+        $this->successMessage($page->getCurrentVersion()->getShortTitle() . ' has been deleted.', true);
+        $this->redirect('/page');
     }
 
     public function autocomplete($identifier = 'id')

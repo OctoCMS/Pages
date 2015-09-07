@@ -2,7 +2,7 @@ function saveTypeConfig(cb) {
     var jsonConfig = JSON.stringify(window.typeConfig);
     var activeTab = $('.nav-tabs li.active').data('key');
 
-    $.post('/' + window.adminUri + '/content-type/save/' + window.typeId, {definition: jsonConfig, activeTab: activeTab}, function (data) {
+    $.post(window.adminUri + '/content-type/save/' + window.typeId, {definition: jsonConfig, activeTab: activeTab}, function (data) {
         $('.property-editor').html(data);
         attachEvents();
 

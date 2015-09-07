@@ -89,11 +89,7 @@ class ContentTypeController extends Controller
             $type = $this->store->saveByInsert($type);
 
             $this->successMessage('Content type created: ' . $type->getName(), true);
-
-            $redirect =  '/'.$this->config->get('site.admin_uri').'/content-type/edit/' . $type->getId();
-            $this->response = new RedirectResponse();
-            $this->response->setHeader('Location', $redirect);
-            return;
+            $this->redirect('/content-type/edit/' . $type->getId());
         }
 
         $this->view->form = $form;
@@ -112,7 +108,7 @@ class ContentTypeController extends Controller
 
         $values = $type->toArray(1);
 
-        $form->setAction('/'.$this->config->get('site.admin_uri').'/content-type/edit/' . $typeId);
+        $form->setAction($this->config->get('site.full_admin_url').'/content-type/edit/' . $typeId);
         $form->setValues($values);
 
         if ($this->request->getMethod() == 'POST') {
@@ -130,10 +126,7 @@ class ContentTypeController extends Controller
             $this->store->saveByUpdate($type);
 
             $this->successMessage('Content type updated: ' . $type->getName(), true);
-
-            $this->response = new RedirectResponse();
-            $this->response->setHeader('Location', '/'.$this->config->get('site.admin_uri').'/content-type');
-            return;
+            $this->redirect('/content-type');
         }
 
         $def = $type->getDefinition();
@@ -154,10 +147,7 @@ class ContentTypeController extends Controller
         $this->store->delete($item);
 
         $this->successMessage('Content type deleted.', true);
-
-        $this->response = new RedirectResponse();
-        $this->response->setHeader('Location', '/'.$this->config->get('site.admin_uri').'/content-type');
-        return;
+        $this->redirect('/content-type');
     }
 
 
@@ -167,7 +157,7 @@ class ContentTypeController extends Controller
         $assets->addJs('Pages', 'content-type');
 
         $form = new Form('content-type');
-        $form->setAction('/'.$this->config->get('site.admin_uri').'/content-type/add');
+        $form->setAction($this->config->get('site.full_admin_url').'/content-type/add');
         $form->addField(Text::create('name', 'Name', true));
 
         $options = ['' => 'No Parent'];
