@@ -20,7 +20,7 @@ class TemplateFunctions extends Listener
         });
     }
 
-    protected function getPages($parentId, $limit = 15)
+    protected function getPages($parentId, $limit = 15, $random = false)
     {
         /**
          * @var $pageStore \Octo\Pages\Store\PageStore
@@ -39,7 +39,13 @@ class TemplateFunctions extends Listener
             $offset = 0;
         }
 
-        $rtn = $pageStore->getByParentId($parentId, ['order' => [['position', 'ASC']], 'limit' => $limit, 'offset' => $offset]);
+        if ($random) {
+            $order = [['RAND()', '']];
+        } else {
+            $order = [['position', 'ASC']];
+        }
+
+        $rtn = $pageStore->getByParentId($parentId, ['order' => $order, 'limit' => $limit, 'offset' => $offset]);
 
         // Filter out unpublished, or expired items.
         $rtn = $rtn->where(function (Page $item) {

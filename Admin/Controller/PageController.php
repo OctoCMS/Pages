@@ -184,7 +184,7 @@ class PageController extends Controller
         $fieldset->addField($field);
 
 
-        $field = Form\Element\Text::create('image_id', 'Page Image', false);
+        $field = Form\Element\Select::create('image_id', 'Page Image', false);
         $field->setClass('octo-image-picker');
         $fieldset->addField($field);
 
@@ -333,6 +333,14 @@ class PageController extends Controller
         $this->view->pages = json_encode($this->pageStore->getParentPageOptions());
 
         $form = $this->getPageDetailsForm('edit');
+
+        $imageId = $latest->getImageId();
+
+        if (!empty($imageId)) {
+            $image = $form->find('image_id');
+            $image->setOptions([$imageId => $latest->getImage()->getTitle()]);
+        }
+
         $form->setValues($page->getDataArray());
         $form->setValues($latest->getDataArray());
 
