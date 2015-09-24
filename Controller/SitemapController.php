@@ -2,6 +2,7 @@
 
 namespace Octo\Pages\Controller;
 
+use b8\Cache;
 use b8\Config;
 use Octo\Controller;
 use Octo\Pages\Model\Page;
@@ -17,6 +18,25 @@ class SitemapController extends Controller
 
     public function xml()
     {
+
+        $cache = Cache::getCache();
+        $key = Config::getInstance()->get('site.namespace') . '_sitemap';
+
+        if ($cache->contains($key)) {
+            $xml = $cache->get($key);
+        } else {
+            $xml = $this->getXmlSitemap();
+
+            // Cache the sitemap XML for 30 minutes:
+            $cache->set($key, $xml, 1800);
+        }
+
+        header('Content-Type: application/xml');
+        die($xml);
+    }
+
+    protected function getXmlSitemap()
+    {
         /** @var \Octo\Pages\Store\PageStore $pageStore */
         $pageStore = Store::get('Page');
 
@@ -25,21 +45,21 @@ class SitemapController extends Controller
         $sitemap = [];
         $this->addPageToXml($home, $sitemap);
 
-        header('Content-Type: application/xml');
 
-        print '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;
-        print '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . PHP_EOL;
+        $output = '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;
+        $output .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . PHP_EOL;
 
         foreach ($sitemap as $url) {
-            print '    <url>' . PHP_EOL;
-            print '        <loc>' . $url['loc'] . '</loc>' . PHP_EOL;
-            print '        <lastmod>' . $url['lastmod'] . '</lastmod>' . PHP_EOL;
-            print '        <priority>' . $url['priority'] . '</priority>' . PHP_EOL;
-            print '    </url>' . PHP_EOL;
+            $output .= '    <url>' . PHP_EOL;
+            $output .= '        <loc>' . $url['loc'] . '</loc>' . PHP_EOL;
+            $output .= '        <lastmod>' . $url['lastmod'] . '</lastmod>' . PHP_EOL;
+            $output .= '        <priority>' . $url['priority'] . '</priority>' . PHP_EOL;
+            $output .= '    </url>' . PHP_EOL;
         }
 
-        print '</urlset>';
-        die;
+        $output .= '</urlset>';
+
+        return $output;
     }
 
     protected function addPageToXml(Page $page, array &$sitemap, $priority = 1)
