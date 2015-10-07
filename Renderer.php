@@ -7,7 +7,7 @@ use b8\Http\Request;
 use b8\Http\Response;
 use Octo\Block;
 use Octo\Event;
-use Octo\Html\Template;
+use Octo\Template;
 use Octo\Pages\Model\Page;
 use Octo\Pages\Model\PageVersion;
 
@@ -24,7 +24,7 @@ class Renderer
     protected $version;
 
     /**
-     * @var \Octo\Html\Template
+     * @var \Octo\Template
      */
     protected $template;
 
@@ -48,7 +48,7 @@ class Renderer
         $this->page = $page;
         $this->version = $version;
         $this->request = $request;
-        $this->template = Template::load($version->getTemplate());
+        $this->template = new Template($version->getTemplate());
         $this->config = Config::getInstance();
     }
 

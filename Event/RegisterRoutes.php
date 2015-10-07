@@ -13,5 +13,9 @@ class RegisterRoutes extends Listener
         $manager->registerListener('BackupRoutes', function (Router $router) {
             $router->register('/', ['controller' => 'Page', 'action' => 'View']);
         });
+
+        $manager->registerListener('BackupRoutes', function (Router $router) {
+            $router->register('/sitemap.xml', ['controller' => 'Sitemap', 'action' => 'xml']);
+        });
     }
 }

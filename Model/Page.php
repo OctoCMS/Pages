@@ -31,6 +31,15 @@ class Page extends Octo\Model
         return $this->getVariable($key);
     }
 
+    public function __exists($key)
+    {
+        if (!is_null($this->getVariable($key))) {
+            return true;
+        }
+
+        return false;
+    }
+
     public function getVariable($key, $recursive = false)
     {
         // Try local variables:

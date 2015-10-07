@@ -1,0 +1,12 @@
+
+<ul>
+    {% for value in items %}
+    <li class="{% if value.active %}active{% endif %} {% if value.current %}current{% endif %} {% if value.children %}parent{% endif %}">
+        <a href="{{ value.uri }}">{{ value.title }}</a>
+
+        {% if value.children %}
+            {% include 'Block/Navigation.twig' with {'items': value.children} %}
+        {% endif %}
+    </li>
+    {%  endfor %}
+</ul>

@@ -5,16 +5,11 @@ namespace Octo\Pages\Controller;
 use Exception;
 use b8\Exception\HttpException\NotFoundException;
 use b8\Exception\HttpException;
-use Octo\Block;
-use Octo\BlockManager;
 use Octo\Controller;
 use Octo\Event;
 use Octo\Pages\Model\Page;
-use Octo\Pages\Model\PageVersion;
 use Octo\Pages\Renderer;
-use Octo\System\Model\ContentItem;
 use Octo\Store;
-use Octo\Html\Template;
 
 class PageController extends Controller
 {
@@ -69,6 +64,8 @@ class PageController extends Controller
             throw new HttpException\NotFoundException('No page found.');
         }
 
+        Event::trigger('PageLoaded', $this->page);
+
         try {
             $renderer = new Renderer($this->page, $this->page->getCurrentVersion(), $this->request);
             $output = $renderer->render();
@@ -85,6 +82,8 @@ class PageController extends Controller
     {
         $versionId = $this->getParam('version', null);
         $this->page = $this->pageStore->getById($pageId);
+
+        Event::trigger('PageLoaded', $this->page);
 
         if (is_null($versionId)) {
             $version = $this->pageStore->getLatestVersion($this->page);

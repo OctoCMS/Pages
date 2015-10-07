@@ -6,17 +6,17 @@ use b8\Http\Router;
 use Octo\Event\Listener;
 use Octo\Event\Manager;
 use Octo\Store;
-use Octo\Html\Template;
+use Octo\Template;
 use Octo\Pages\Model\Page;
 
 class TemplateFunctions extends Listener
 {
     public function registerListeners(Manager $manager)
     {
-        $manager->registerListener('PublicTemplateLoaded', function (Template $template) {
-            $template->addFunction('getPages', function () {
+        $manager->registerListener('TemplateInit', function (array &$functions) {
+            $functions['getPages'] = function () {
                 return call_user_func_array([$this, 'getPages'], func_get_args());
-            });
+            };
         });
     }
 
