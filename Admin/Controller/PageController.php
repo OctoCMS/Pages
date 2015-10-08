@@ -380,11 +380,11 @@ class PageController extends Controller
                 continue;
             }
 
-            if ($item->getExtension() !== 'html') {
+            if ($item->getExtension() !== 'twig') {
                 continue;
             }
 
-            $rtn[$item->getBasename('.html')] = $item->getBasename('.html');
+            $rtn[$item->getBasename('.twig')] = $item->getBasename('.twig');
         }
 
         return $rtn;

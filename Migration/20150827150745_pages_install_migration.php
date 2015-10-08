@@ -12,6 +12,14 @@ class PagesInstallMigration extends AbstractMigration
         $this->createPage();
         $this->createPageVersion();
 
+        // Add content:
+        $contentType = new \Octo\Pages\Model\ContentType();
+        $contentType->setName('Default');
+        $contentType->setIcon('file-o');
+        $contentType->setDefinition('[{"name":"Properties","protected":true,"properties":{}}]');
+
+        \Octo\Store::get('ContentType')->save($contentType);
+
         // Add foreign keys:
         $table = $this->table('content_type');
 
@@ -65,7 +73,7 @@ class PagesInstallMigration extends AbstractMigration
         $table = $this->table('content_type', ['id' => false, 'primary_key' => ['id']]);
 
         if (!$this->hasTable('content_type')) {
-            $table->addColumn('id', 'integer', ['signed' => false, 'null' => false]);
+            $table->addColumn('id', 'integer', ['signed' => false, 'null' => false, 'identity' => true]);
             $table->create();
         }
 
@@ -159,7 +167,7 @@ class PagesInstallMigration extends AbstractMigration
         $table = $this->table('page_version', ['id' => false, 'primary_key' => ['id']]);
 
         if (!$this->hasTable('page_version')) {
-            $table->addColumn('id', 'integer', ['signed' => false, 'null' => false]);
+            $table->addColumn('id', 'integer', ['signed' => false, 'null' => false, 'identity' => true]);
             $table->create();
         }
 
