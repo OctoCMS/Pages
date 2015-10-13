@@ -11,9 +11,9 @@
                 <li><a href="#details" data-toggle="tab"><i class="fa fa-info-circle"></i> Page Details</a></li>
 
                 {for contentDefinition}
-                    <li>
-                        <a href="#tab_{@value.idx}" data-toggle="tab">{@value.name}</a>
-                    </li>
+                <li>
+                    <a href="#tab_{@value.idx}" data-toggle="tab">{@value.name}</a>
+                </li>
                 {/for}
             </ul>
 
@@ -27,14 +27,14 @@
                 </div>
 
                 {for contentDefinition}
-                    <div class="tab-pane" id="tab_{@value.idx}">
-                        {for value.properties}
-                        <div class="row block-editor">
-                            <div class="col-lg-2"><h4>{@value.name}</h4></div>
-                            <div class="col-lg-10">{@value.editor}</div>
-                        </div>
-                        {/for}
+                <div class="tab-pane" id="tab_{@value.idx}">
+                    {for value.properties}
+                    <div class="row block-editor">
+                        <div class="col-lg-2"><h4>{@value.name}</h4></div>
+                        <div class="col-lg-10">{@value.editor}</div>
                     </div>
+                    {/for}
+                </div>
                 {/for}
             </div>
         </div>
@@ -50,58 +50,58 @@
         editor.id = '{@page.id}';
         editor.content_id = '{@latest.content_item_id}';
         editor.content = {@pageContent};
-        editor.page = {
-            title: {@latest.title.asJson},
-            short_title: {@latest.short_title.asJson},
-            description: {@latest.description.asJson},
-            meta_description: {@latest.meta_description.asJson},
-            template: '{@latest.template}',
+    editor.page = {
+        title: {@latest.title.asJson},
+    short_title: {@latest.short_title.asJson},
+    description: {@latest.description.asJson},
+    meta_description: {@latest.meta_description.asJson},
+    template: '{@latest.template}',
             image_id: '{@latest.image_id}',
             parent_id: '{@page.parent_id}'
-        };
-        editor.templates = {@templates};
-        editor.pages = {@pages};
+    };
+    editor.templates = {@templates};
+    editor.pages = {@pages};
 
-        $('.block-editor footer').hide();
+    $('.block-editor footer').hide();
 
-        CKEDITOR.on('instanceReady', function (instance) {
-            instance.editor.on('blur', function () {
-                var element = $(instance.editor.element.$);
-                editor.triggerSaveContent(element.parents('form'));
-            });
+    CKEDITOR.on('instanceReady', function (instance) {
+        instance.editor.on('blur', function () {
+            var element = $(instance.editor.element.$);
+            editor.triggerSaveContent(element.parents('form'));
         });
+    });
 
-        $('.block-editor input:not(.skip-autosave, .select2-input)').on('change', function () {
-            editor.triggerSaveContent($(this).parents('form'));
-        });
+    $('.block-editor input:not(.skip-autosave, .select2-input)').on('change', function () {
+        editor.triggerSaveContent($(this).parents('form'));
+    });
 
-        $('.block-editor textarea').on('change', function () {
-            editor.triggerSaveContent($(this).parents('form'));
-        });
+    $('.block-editor textarea').on('change', function () {
+        editor.triggerSaveContent($(this).parents('form'));
+    });
 
-        $('.block-editor input').on('autosave', function () {
-            editor.triggerSaveContent($(this).parents('form'));
-        });
+    $('.block-editor input, .block-editor select').on('autosave', function () {
+        editor.triggerSaveContent($(this).parents('form'));
+    });
 
-        $('.block-editor select:not(.skip-autosave)').on('change', function () {
-            editor.triggerSaveContent($(this).parents('form'));
-        });
+    $('.block-editor select:not(.skip-autosave)').on('change', function () {
+        editor.triggerSaveContent($(this).parents('form'));
+    });
 
-        $('#details input:not(.skip-autosave, .select2-input)').on('change', function () {
-            editor.triggerSaveDetails();
-        });
+    $('#details input:not(.skip-autosave, .select2-input)').on('change', function () {
+        editor.triggerSaveDetails();
+    });
 
-        $('#details input').on('autosave', function () {
-            editor.triggerSaveDetails();
-        });
+    $('#details input').on('autosave', function () {
+        editor.triggerSaveDetails();
+    });
 
-        $('#details select:not(.skip-autosave)').on('change', function () {
-            editor.triggerSaveDetails();
-        });
+    $('#details select:not(.skip-autosave)').on('change', function () {
+        editor.triggerSaveDetails();
+    });
 
-        $('#details .datetime-picker').on('dp.change', function () {
-            editor.triggerSaveDetails();
-        });
+    $('#details .datetime-picker').on('dp.change', function () {
+        editor.triggerSaveDetails();
+    });
     });
 
 
