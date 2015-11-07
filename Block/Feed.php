@@ -10,6 +10,7 @@ use Octo\Admin\Form;
 use Octo\Block;
 use Octo\Page\Model\Page;
 use Octo\Store;
+use Octo\Template;
 
 class Feed extends Block
 {
@@ -17,6 +18,11 @@ class Feed extends Block
      * @var Page
      */
     protected $pageStore;
+
+    /**
+     * @var array
+     */
+    protected $items = [];
 
     public static function getInfo()
     {
@@ -51,14 +57,36 @@ class Feed extends Block
     public function renderNow()
     {
         if (isset($this->content['url'])) {
-            $feed = $this->getFeed($this->content['url']);
-
-            if (isset($this->templateParams['limit'])) {
-                $feed['items'] = array_slice($feed['items'], 0, $this->templateParams['limit']);
-            }
-
-            $this->view->feed = $feed;
+            $this->items = $this->getFeed($this->content['url']);
         }
+
+        return $this;
+    }
+
+    public function limit($limit)
+    {
+        $this->items['items'] = array_slice($this->items['items'], 0, $limit);
+        return $this;
+    }
+
+    public function getItem($index)
+    {
+        $rtn = '';
+
+        if (isset($this->items['items'][$index])) {
+            $this->view = new Template('Block/FeedItem');
+            $this->view->item = $this->items['items'][$index];
+
+            $rtn = $this->view->render();
+        }
+
+        return $rtn;
+    }
+
+    public function __toString()
+    {
+        $this->view->items = $this->items;
+        return $this->view->render();
     }
 
     protected function getFeed($url)
