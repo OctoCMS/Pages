@@ -11,6 +11,7 @@ use Octo\Admin\Menu;
 use Octo\Block;
 use Octo\Event;
 use Octo\Form\Element\DateOfBirth;
+use Octo\Pages\Model\ContentType;
 use Octo\Pages\Model\Page;
 use Octo\Pages\Model\PageVersion;
 use Octo\Store;
@@ -109,8 +110,15 @@ class PageController extends Controller
         $this->setTitle('Add Page');
         $this->addBreadcrumb('Add Page', '/page/add');
 
+        if (is_null($type) || is_null($parentId)) {
+            $this->response = new RedirectResponse($this->response);
+            $this->response->setHeader('Location', $this->config->get('site.full_admin_url') . '/page/create-homepage');
+            return;
+        }
 
-        $form = $this->getPageDetailsForm('add', (is_null($type) && is_null($parentId)));
+        $contentType = Store::get('ContentType')->getById($type);
+
+        $form = $this->getPageDetailsForm('add', $contentType);
 
         if ($form) {
             $form->setValues(['parent_id' => $parentId, 'type' => $type]);
@@ -119,7 +127,7 @@ class PageController extends Controller
         $this->view->form = $form;
     }
 
-    protected function getPageDetailsForm($type = 'add', $isHomepage = false)
+    protected function getPageDetailsForm($type = 'add', ContentType $contentType)
     {
         $form = new FormElement();
 
@@ -139,7 +147,7 @@ class PageController extends Controller
         $fieldset->addField(Form\Element\Text::create('meta_description', 'Meta Description', true));
 
         $templates = [];
-        foreach ($this->getTemplates() as $template) {
+        foreach ($contentType->getAllowedTemplates() as $template) {
             $templates[$template] = ucwords($template);
         }
 
@@ -154,26 +162,7 @@ class PageController extends Controller
         $fieldset->addField($field);
 
         $fieldset->addField(Form\Element\Hidden::create('parent_id', '', false));
-
-        if ($isHomepage) {
-            $types = [];
-
-            foreach (Store::get('ContentType')->all() as $cType) {
-                $types[$cType->getId()] = $cType->getName();
-            }
-
-            if (count($types) == 0) {
-                $this->errorMessage('You cannot create pages until you have created at least one content type.', true);
-                $this->redirect('/content-type');
-            }
-
-            $field = Form\Element\Select::create('type', 'Page Type', false);
-            $field->setOptions($types);
-            $field->setClass('select2');
-            $fieldset->addField($field);
-        } else {
-            $fieldset->addField(Form\Element\Hidden::create('type', '', false));
-        }
+        $fieldset->addField(Form\Element\Hidden::create('type', '', false));
 
         $field = Form\Element\Text::create('publish_date', 'Publish Date', false);
         $field->setClass('datetime-picker');
@@ -329,10 +318,9 @@ class PageController extends Controller
         $this->view->latest = $latest;
         $this->view->blocks = $blockTypes;
         $this->view->contentDefinition = $contentDefinition;
-        $this->view->templates = json_encode($this->getTemplates());
         $this->view->pages = json_encode($this->pageStore->getParentPageOptions());
 
-        $form = $this->getPageDetailsForm('edit');
+        $form = $this->getPageDetailsForm('edit', $page->getContentType());
 
         $imageId = $latest->getImageId();
 
@@ -366,29 +354,7 @@ class PageController extends Controller
         }
     }
 
-    protected function getTemplates()
-    {
-        $rtn = [];
-        $dir = new \DirectoryIterator(SITE_TEMPLATE_PATH);
 
-        foreach ($dir as $item) {
-            if ($item->isDot()) {
-                continue;
-            }
-
-            if (!$item->isFile()) {
-                continue;
-            }
-
-            if ($item->getExtension() !== 'twig') {
-                continue;
-            }
-
-            $rtn[$item->getBasename('.twig')] = $item->getBasename('.twig');
-        }
-
-        return $rtn;
-    }
 
     protected function parseTemplate($template)
     {

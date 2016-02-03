@@ -75,6 +75,7 @@ class ContentTypeController extends Controller
             $type = new ContentType();
             $type->setName($this->getParam('name'));
             $type->setAllowedChildren(json_encode($this->getParam('allowed_children')));
+            $type->setAllowedTemplates(json_encode($this->getParam('allowed_templates')));
             $type->setDefinition(json_encode($this->defaultDefinition));
 
             $parent = $this->getParam('parent_id', null);
@@ -114,6 +115,7 @@ class ContentTypeController extends Controller
         if ($this->request->getMethod() == 'POST') {
             $type->setName($this->getParam('name'));
             $type->setAllowedChildren($this->getParam('allowed_children'));
+            $type->setAllowedTemplates($this->getParam('allowed_templates'));
             $parent = $this->getParam('parent_id', null);
 
             if (empty($parent)) {
@@ -183,6 +185,14 @@ class ContentTypeController extends Controller
         $select->setOptions($options);
 
         $select = new Select();
+        $select->setClass('select2');
+        $select->setName('allowed_templates');
+        $select->setLabel('Allowed templates:');
+        $select->setMultiple(true);
+        $form->addField($select);
+        $select->setOptions($this->getTemplates());
+
+        $select = new Select();
         $select->setClass('select2 icon');
         $select->setName('icon');
         $select->setLabel('Icon');
@@ -194,6 +204,30 @@ class ContentTypeController extends Controller
         $form->addField($submit);
 
         return $form;
+    }
+
+    protected function getTemplates()
+    {
+        $rtn = [];
+        $dir = new \DirectoryIterator(SITE_TEMPLATE_PATH);
+
+        foreach ($dir as $item) {
+            if ($item->isDot()) {
+                continue;
+            }
+
+            if (!$item->isFile()) {
+                continue;
+            }
+
+            if ($item->getExtension() !== 'twig') {
+                continue;
+            }
+
+            $rtn[$item->getBasename('.twig')] = $item->getBasename('.twig');
+        }
+
+        return $rtn;
     }
 
     public function save($typeId)

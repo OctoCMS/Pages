@@ -78,6 +78,8 @@ class ContentType extends Octo\Model
         return $rtn;
     }
 
+
+
     public function getAllowedChildTypes()
     {
         $rtn = [];
@@ -88,6 +90,39 @@ class ContentType extends Octo\Model
             foreach ($allowed as $childId) {
                 $rtn[$childId] = Octo\Store::get('ContentType')->getById($childId);
             }
+        }
+
+        return $rtn;
+    }
+
+    public function setAllowedTemplates($value)
+    {
+        if (is_array($value)) {
+            $value = json_encode($value);
+        }
+
+        if (empty($value)) {
+            $value = null;
+        }
+
+        $this->validateString('AllowedTemplates', $value);
+
+        if ($this->data['allowed_templates'] === $value) {
+            return;
+        }
+
+        $this->data['allowed_templates'] = $value;
+        $this->setModified('allowed_templates');
+    }
+
+    public function getAllowedTemplates()
+    {
+        $rtn = $this->data['allowed_templates'];
+
+        if (!empty($rtn)) {
+            $rtn = json_decode($rtn, true);
+        } else {
+            $rtn = [];
         }
 
         return $rtn;

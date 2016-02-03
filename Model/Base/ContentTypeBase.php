@@ -37,6 +37,9 @@ trait ContentTypeBase
         $this->data['icon'] = null;
         $this->getters['icon'] = 'getIcon';
         $this->setters['icon'] = 'setIcon';
+        $this->data['allowed_templates'] = null;
+        $this->getters['allowed_templates'] = 'getAllowedTemplates';
+        $this->setters['allowed_templates'] = 'setAllowedTemplates';
 
         // Foreign keys:
         $this->getters['Parent'] = 'getParent';
@@ -110,6 +113,18 @@ trait ContentTypeBase
     public function getIcon()
     {
         $rtn = $this->data['icon'];
+
+        return $rtn;
+    }
+
+    /**
+    * Get the value of AllowedTemplates / allowed_templates.
+    *
+    * @return string
+    */
+    public function getAllowedTemplates()
+    {
+        $rtn = $this->data['allowed_templates'];
 
         return $rtn;
     }
@@ -227,6 +242,25 @@ trait ContentTypeBase
 
         $this->data['icon'] = $value;
         $this->setModified('icon');
+    }
+
+    /**
+    * Set the value of AllowedTemplates / allowed_templates.
+    *
+    * Must not be null.
+    * @param $value string
+    */
+    public function setAllowedTemplates($value)
+    {
+        $this->validateString('AllowedTemplates', $value);
+        $this->validateNotNull('AllowedTemplates', $value);
+
+        if ($this->data['allowed_templates'] === $value) {
+            return;
+        }
+
+        $this->data['allowed_templates'] = $value;
+        $this->setModified('allowed_templates');
     }
     /**
     * Get the ContentType model for this ContentType by Id.
