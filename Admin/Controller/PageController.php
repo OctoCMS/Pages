@@ -206,7 +206,7 @@ class PageController extends Controller
         $page->generateId();
         $page->setContentTypeId($this->getParam('type'));
 
-        $page->setPublishDate($this->getParam('publish_date', null));
+        $page->setPublishDate($this->getParam('publish_date', new \DateTime()));
         $page->setExpiryDate($this->getParam('expiry_date', null));
 
         /** @var \Octo\Pages\Model\Page $page */
