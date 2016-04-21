@@ -130,7 +130,7 @@ class PagesInstallMigration extends AbstractMigration
         }
 
         if (!$table->hasColumn('uri')) {
-            $table->addColumn('uri', 'string', ['limit' => 500, 'null' => false]);
+            $table->addColumn('uri', 'string', ['limit' => 250, 'null' => false]);
         }
 
         if (!$table->hasColumn('position')) {
@@ -146,7 +146,7 @@ class PagesInstallMigration extends AbstractMigration
         }
 
         if (!$table->hasIndex('uri')) {
-            $table->addIndex('uri', ['unique' => false]);
+            $table->addIndex('uri', ['unique' => true]);
         }
 
         $table->save();
@@ -154,7 +154,7 @@ class PagesInstallMigration extends AbstractMigration
         $table->changeColumn('parent_id', 'char', ['limit' => 5, 'null' => true, 'default' => null]);
         $table->changeColumn('current_version_id', 'integer', ['signed' => false, 'null' => true, 'default' => null]);
         $table->changeColumn('content_type_id', 'integer', ['signed' => false, 'null' => false, 'default' => 1]);
-        $table->changeColumn('uri', 'string', ['limit' => 500, 'null' => false]);
+        $table->changeColumn('uri', 'string', ['limit' => 250, 'null' => false]);
         $table->changeColumn('position', 'integer', ['signed' => false, 'null' => false, 'default' => 0]);
         $table->changeColumn('publish_date', 'datetime', ['null' => true, 'default' => null]);
         $table->changeColumn('expiry_date', 'datetime', ['null' => true, 'default' => null]);

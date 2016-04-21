@@ -542,6 +542,13 @@ class PageController extends Controller
     public function delete($pageId)
     {
         $page = $this->pageStore->getById($pageId);
+
+        if (empty($page)) {
+            $this->errorMessage('Page ID '. $pageId . ' does not exist.', true);
+            $this->redirect('/page');
+            return;
+        }
+
         $this->pageStore->delete($page);
 
         Log::create(Log::TYPE_DELETE, 'page', $page->getCurrentVersion()->getTitle(), $page->getId());
