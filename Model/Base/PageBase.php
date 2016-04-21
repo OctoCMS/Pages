@@ -28,15 +28,15 @@ trait PageBase
         $this->data['current_version_id'] = null;
         $this->getters['current_version_id'] = 'getCurrentVersionId';
         $this->setters['current_version_id'] = 'setCurrentVersionId';
+        $this->data['content_type_id'] = null;
+        $this->getters['content_type_id'] = 'getContentTypeId';
+        $this->setters['content_type_id'] = 'setContentTypeId';
         $this->data['uri'] = null;
         $this->getters['uri'] = 'getUri';
         $this->setters['uri'] = 'setUri';
         $this->data['position'] = null;
         $this->getters['position'] = 'getPosition';
         $this->setters['position'] = 'setPosition';
-        $this->data['content_type_id'] = null;
-        $this->getters['content_type_id'] = 'getContentTypeId';
-        $this->setters['content_type_id'] = 'setContentTypeId';
         $this->data['publish_date'] = null;
         $this->getters['publish_date'] = 'getPublishDate';
         $this->setters['publish_date'] = 'setPublishDate';
@@ -89,6 +89,18 @@ trait PageBase
     }
 
     /**
+    * Get the value of ContentTypeId / content_type_id.
+    *
+    * @return int
+    */
+    public function getContentTypeId()
+    {
+        $rtn = $this->data['content_type_id'];
+
+        return $rtn;
+    }
+
+    /**
     * Get the value of Uri / uri.
     *
     * @return string
@@ -108,18 +120,6 @@ trait PageBase
     public function getPosition()
     {
         $rtn = $this->data['position'];
-
-        return $rtn;
-    }
-
-    /**
-    * Get the value of ContentTypeId / content_type_id.
-    *
-    * @return int
-    */
-    public function getContentTypeId()
-    {
-        $rtn = $this->data['content_type_id'];
 
         return $rtn;
     }
@@ -223,6 +223,31 @@ trait PageBase
     }
 
     /**
+    * Set the value of ContentTypeId / content_type_id.
+    *
+    * Must not be null.
+    * @param $value int
+    */
+    public function setContentTypeId($value)
+    {
+        $this->validateInt('ContentTypeId', $value);
+
+        // As this is a foreign key, empty values should be treated as null:
+        if (empty($value)) {
+            $value = null;
+        }
+
+        $this->validateNotNull('ContentTypeId', $value);
+
+        if ($this->data['content_type_id'] === $value) {
+            return;
+        }
+
+        $this->data['content_type_id'] = $value;
+        $this->setModified('content_type_id');
+    }
+
+    /**
     * Set the value of Uri / uri.
     *
     * Must not be null.
@@ -258,31 +283,6 @@ trait PageBase
 
         $this->data['position'] = $value;
         $this->setModified('position');
-    }
-
-    /**
-    * Set the value of ContentTypeId / content_type_id.
-    *
-    * Must not be null.
-    * @param $value int
-    */
-    public function setContentTypeId($value)
-    {
-        $this->validateInt('ContentTypeId', $value);
-
-        // As this is a foreign key, empty values should be treated as null:
-        if (empty($value)) {
-            $value = null;
-        }
-
-        $this->validateNotNull('ContentTypeId', $value);
-
-        if ($this->data['content_type_id'] === $value) {
-            return;
-        }
-
-        $this->data['content_type_id'] = $value;
-        $this->setModified('content_type_id');
     }
 
     /**

@@ -182,34 +182,6 @@ trait PageStoreBase
         }
 
     }
-    /**
-    * @param $value
-    * @param string $useConnection Connection type to use.
-    * @throws StoreException
-    * @return Page
-    */
-    public function getByUri($value, $useConnection = 'read')
-    {
-        if (is_null($value)) {
-            throw new StoreException('Value passed to ' . __FUNCTION__ . ' cannot be null.');
-        }
-
-        $query = new Query($this->getNamespace('Page').'\Model\Page', $useConnection);
-        $query->select('*')->from('page')->limit(1);
-        $query->where('`uri` = :uri');
-        $query->bind(':uri', $value);
-
-        try {
-            $query->execute();
-            $result = $query->fetch();
-
-            $this->setCache($value, $result);
-
-            return $result;
-        } catch (PDOException $ex) {
-            throw new StoreException('Could not get Page by Uri', 0, $ex);
-        }
-    }
 
     /**
      * @param $value
@@ -261,6 +233,60 @@ trait PageStoreBase
             return new PageCollection($query->fetchAll());
         } catch (PDOException $ex) {
             throw new StoreException('Could not get Page by ContentTypeId', 0, $ex);
+        }
+
+    }
+
+    /**
+     * @param $value
+     * @param array $options Offsets, limits, etc.
+     * @param string $useConnection Connection type to use.
+     * @throws StoreException
+     * @return int
+     */
+    public function getTotalForUri($value, $options = [], $useConnection = 'read')
+    {
+        if (is_null($value)) {
+            throw new StoreException('Value passed to ' . __FUNCTION__ . ' cannot be null.');
+        }
+
+        $query = new Query($this->getNamespace('Page').'\Model\Page', $useConnection);
+        $query->from('page')->where('`uri` = :uri');
+        $query->bind(':uri', $value);
+
+        $this->handleQueryOptions($query, $options);
+
+        try {
+            return $query->getCount();
+        } catch (PDOException $ex) {
+            throw new StoreException('Could not get count of Page by Uri', 0, $ex);
+        }
+    }
+
+    /**
+     * @param $value
+     * @param array $options Limits, offsets, etc.
+     * @param string $useConnection Connection type to use.
+     * @throws StoreException
+     * @return PageCollection
+     */
+    public function getByUri($value, $options = [], $useConnection = 'read')
+    {
+        if (is_null($value)) {
+            throw new StoreException('Value passed to ' . __FUNCTION__ . ' cannot be null.');
+        }
+
+        $query = new Query($this->getNamespace('Page').'\Model\Page', $useConnection);
+        $query->from('page')->where('`uri` = :uri');
+        $query->bind(':uri', $value);
+
+        $this->handleQueryOptions($query, $options);
+
+        try {
+            $query->execute();
+            return new PageCollection($query->fetchAll());
+        } catch (PDOException $ex) {
+            throw new StoreException('Could not get Page by Uri', 0, $ex);
         }
 
     }

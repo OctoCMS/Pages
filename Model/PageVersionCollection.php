@@ -20,7 +20,7 @@ class PageVersionCollection extends Collection
      * @param PageVersion $value
      * @return PageVersionCollection
      */
-    public function add($key, PageVersion $value)
+    public function addPageVersion($key, PageVersion $value)
     {
         return parent::add($key, $value);
     }

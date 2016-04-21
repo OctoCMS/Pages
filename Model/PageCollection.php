@@ -20,7 +20,7 @@ class PageCollection extends Collection
      * @param Page $value
      * @return PageCollection
      */
-    public function add($key, Page $value)
+    public function addPage($key, Page $value)
     {
         return parent::add($key, $value);
     }

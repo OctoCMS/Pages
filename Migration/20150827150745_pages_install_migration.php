@@ -58,7 +58,7 @@ class PagesInstallMigration extends AbstractMigration
         }
 
         if (!$table->hasForeignKey('user_id')) {
-            $table->addForeignKey('user_id', 'content_type', 'id', ['delete' => 'SET_NULL', 'update' => 'CASCADE']);
+            $table->addForeignKey('user_id', 'user', 'id', ['delete' => 'SET_NULL', 'update' => 'CASCADE']);
             $table->save();
         }
 

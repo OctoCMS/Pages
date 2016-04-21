@@ -61,10 +61,10 @@ trait PageVersionBase
         $this->setters['ContentItem'] = 'setContentItem';
         $this->getters['Page'] = 'getPage';
         $this->setters['Page'] = 'setPage';
-        $this->getters['User'] = 'getUser';
-        $this->setters['User'] = 'setUser';
         $this->getters['Image'] = 'getImage';
         $this->setters['Image'] = 'setImage';
+        $this->getters['User'] = 'getUser';
+        $this->setters['User'] = 'setUser';
     }
     /**
     * Get the value of Id / id.
@@ -549,54 +549,6 @@ trait PageVersionBase
         return $this->setPageId($value->getId());
     }
     /**
-    * Get the User model for this PageVersion by Id.
-    *
-    * @uses \Octo\System\Store\UserStore::getById()
-    * @uses \Octo\System\Model\User
-    * @return \Octo\System\Model\User
-    */
-    public function getUser()
-    {
-        $key = $this->getUserId();
-
-        if (empty($key)) {
-            return null;
-        }
-
-        return Factory::getStore('User', 'Octo\System')->getById($key);
-    }
-
-    /**
-    * Set User - Accepts an ID, an array representing a User or a User model.
-    *
-    * @param $value mixed
-    */
-    public function setUser($value)
-    {
-        // Is this an instance of User?
-        if ($value instanceof \Octo\System\Model\User) {
-            return $this->setUserObject($value);
-        }
-
-        // Is this an array representing a User item?
-        if (is_array($value) && !empty($value['id'])) {
-            return $this->setUserId($value['id']);
-        }
-
-        // Is this a scalar value representing the ID of this foreign key?
-        return $this->setUserId($value);
-    }
-
-    /**
-    * Set User - Accepts a User model.
-    *
-    * @param $value \Octo\System\Model\User
-    */
-    public function setUserObject(\Octo\System\Model\User $value)
-    {
-        return $this->setUserId($value->getId());
-    }
-    /**
     * Get the File model for this PageVersion by Id.
     *
     * @uses \Octo\File\Store\FileStore::getById()
@@ -643,5 +595,53 @@ trait PageVersionBase
     public function setImageObject(\Octo\File\Model\File $value)
     {
         return $this->setImageId($value->getId());
+    }
+    /**
+    * Get the User model for this PageVersion by Id.
+    *
+    * @uses \Octo\System\Store\UserStore::getById()
+    * @uses \Octo\System\Model\User
+    * @return \Octo\System\Model\User
+    */
+    public function getUser()
+    {
+        $key = $this->getUserId();
+
+        if (empty($key)) {
+            return null;
+        }
+
+        return Factory::getStore('User', 'Octo\System')->getById($key);
+    }
+
+    /**
+    * Set User - Accepts an ID, an array representing a User or a User model.
+    *
+    * @param $value mixed
+    */
+    public function setUser($value)
+    {
+        // Is this an instance of User?
+        if ($value instanceof \Octo\System\Model\User) {
+            return $this->setUserObject($value);
+        }
+
+        // Is this an array representing a User item?
+        if (is_array($value) && !empty($value['id'])) {
+            return $this->setUserId($value['id']);
+        }
+
+        // Is this a scalar value representing the ID of this foreign key?
+        return $this->setUserId($value);
+    }
+
+    /**
+    * Set User - Accepts a User model.
+    *
+    * @param $value \Octo\System\Model\User
+    */
+    public function setUserObject(\Octo\System\Model\User $value)
+    {
+        return $this->setUserId($value->getId());
     }
 }
