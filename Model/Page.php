@@ -98,6 +98,12 @@ class Page extends Octo\Model
 
             $uri .= StringUtilities::generateSlug($this->getCurrentVersion()->getShortTitle());
 
+            $existingPage = Store::get('Page')->getByUri($uri);
+
+            if (!empty($existingPage)) {
+                $uri .= $uri . '-' . $this->getId();
+            }
+
             $this->setUri($uri);
         }
     }
