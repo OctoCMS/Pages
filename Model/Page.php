@@ -100,7 +100,7 @@ class Page extends Octo\Model
 
             $existingPage = Store::get('Page')->getByUri($uri);
 
-            if (!empty($existingPage)) {
+            if (!empty($existingPage) && $existingPage->getId() != $this->getId()) {
                 $uri .= '-' . $this->getId();
             }
 
