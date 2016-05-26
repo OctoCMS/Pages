@@ -42,7 +42,7 @@ class TemplateFunctions extends Listener
         if ($random) {
             $order = [['RAND()', '']];
         } else {
-            $order = [['position', 'ASC']];
+            $order = [['position', 'ASC'], ['publish_date', 'DESC']];
         }
 
         $rtn = $pageStore->getByParentId($parentId, ['order' => $order, 'limit' => $limit, 'offset' => $offset]);
