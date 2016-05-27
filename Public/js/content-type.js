@@ -18,8 +18,18 @@ $(document).ready(function () {
 
 function attachEvents()
 {
-    $('select.select2, input.select2').select2('destroy');
-    $('select.select2, input.select2').select2();
+    $('select.select2:not(.initialised), input.select2:not(.initialised)').select2({
+        templateResult: function (item) {
+            var element = $(item.element);
+
+            if (element.parents('select').hasClass('icon')) {
+                var itemHtml = '<span><i class="fa fa-'+element.val()+'"></i>&nbsp; ' + item.text + '</span>';
+                return $(itemHtml);
+            }
+
+            return item.text;
+        }
+    });
 
     $('.add-tab').on('click', function (e) {
         e.preventDefault();
