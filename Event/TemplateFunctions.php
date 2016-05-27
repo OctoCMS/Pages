@@ -52,10 +52,8 @@ class TemplateFunctions extends Listener
             $expiry = $item->getExpiryDate();
             $publish = $item->getPublishDate();
             $now = new \DateTime();
-
-
-
-            if (!empty($publish) && $publish > $now) {
+            
+            if (empty($publish) || $publish > $now) {
                 return false;
             }
 
