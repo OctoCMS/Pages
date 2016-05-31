@@ -571,7 +571,12 @@ class PageController extends Controller
                 $id = $page->getUri();
             }
 
-            $rtn['results'][] = ['id' => $id, 'text' => $page->getCurrentVersion()->getTitle()];
+            $rtn['results'][] = [
+                'id' => $id,
+                'text' => $page->getCurrentVersion()->getTitle(),
+                'uri' => $page->getUri(),
+                'image' => $page->getCurrentVersion()->getImageId(),
+            ];
         }
 
         die(json_encode($rtn));
