@@ -142,24 +142,38 @@ class PageController extends Controller
         $form->addField($fieldset);
 
         $fieldset->addField(Form\Element\Text::create('title', 'Page Title', true));
-        $fieldset->addField(Form\Element\Text::create('short_title', 'Short Title', true));
+
+        if ($type != 'add') {
+            $fieldset->addField(Form\Element\Text::create('short_title', 'Short Title', true));
+        }
+
         $fieldset->addField(Form\Element\Text::create('description', 'Description', true));
-        $fieldset->addField(Form\Element\Text::create('meta_description', 'Meta Description', true));
+
+        if ($type != 'add') {
+            $fieldset->addField(Form\Element\Text::create('meta_description', 'Meta Description', true));
+        }
 
         $templates = [];
         foreach ($contentType->getAllowedTemplates() as $template) {
             $templates[$template] = ucwords($template);
+
         }
 
-        if (!count($templates)) {
+        $templateCount = count($templates);
+
+        if ($templateCount == 0) {
             $this->errorMessage('You cannot create pages until you have created at least one page template.', true);
             $this->redirect('/');
+        } elseif ($templateCount == 1) {
+            $field = Form\Element\Hidden::create('template', 'Template', true);
+            $field->setValue($template);
+            $fieldset->addField($field);
+        } else {
+            $field = Form\Element\Select::create('template', 'Template', true);
+            $field->setOptions($templates);
+            $field->setClass('select2');
+            $fieldset->addField($field);
         }
-
-        $field = Form\Element\Select::create('template', 'Template', true);
-        $field->setOptions($templates);
-        $field->setClass('select2');
-        $fieldset->addField($field);
 
         $fieldset->addField(Form\Element\Hidden::create('parent_id', '', false));
         $fieldset->addField(Form\Element\Hidden::create('type', '', false));
@@ -168,10 +182,11 @@ class PageController extends Controller
         $field->setClass('datetime-picker');
         $fieldset->addField($field);
 
-        $field = Form\Element\Text::create('expiry_date', 'Expiry Date', false);
-        $field->setClass('datetime-picker');
-        $fieldset->addField($field);
-
+        if ($type != 'add') {
+            $field = Form\Element\Text::create('expiry_date', 'Expiry Date', false);
+            $field->setClass('datetime-picker');
+            $fieldset->addField($field);
+        }
 
         $field = Form\Element\Select::create('image_id', 'Page Image', false);
         $field->setClass('octo-image-picker');
@@ -205,7 +220,6 @@ class PageController extends Controller
         // Create an ID for the page, which will also create a temporary URI for it:
         $page->generateId();
         $page->setContentTypeId($this->getParam('type'));
-
         $page->setPublishDate($this->getParam('publish_date', new \DateTime()));
         $page->setExpiryDate($this->getParam('expiry_date', null));
 
@@ -214,6 +228,15 @@ class PageController extends Controller
 
         // Set up the current version of the page:
         $version->setValues($this->getParams());
+
+        $shortTitle = $version->getTitle();
+
+        if (strlen($shortTitle) > 50) {
+            $shortTitle = substr($shortTitle, 0, 47) . '...';
+        }
+
+        $version->setShortTitle($shortTitle);
+        $version->setMetaDescription($version->getDescription());
 
         if (empty($this->getParam('image_id', null))) {
             $version->setImageId(null);
