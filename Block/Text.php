@@ -55,11 +55,21 @@ class Text extends Block
     public function renderNow()
     {
         $content = $this->getContent('content', '');
+        $content = $this->processTextContent($content);
 
+        return $content;
+    }
+
+    protected function processTextContent($content)
+    {
         if (!empty($content)) {
             // Replace file blocks
             $pattern = '/<img id="([a-zA-Z0-9]{32})"(?:.*?)>/i';
             $content = preg_replace_callback($pattern, [$this, 'replaceFile'], $content);
+
+            // Replace page links
+            $pattern = '/<a href="page:([a-zA-Z0-9]{5})">([^\<]+)<\/a>/i';
+            $content = preg_replace_callback($pattern, [$this, 'replacePageLink'], $content);
         }
 
         return $content;
@@ -76,5 +86,20 @@ class Text extends Block
                 return $template->render();
             }
         }
+    }
+
+    public function replacePageLink($matches)
+    {
+        if (isset($matches[1])) {
+            $page = Store::get('Page')->getById($matches[1]);
+
+            if ($page) {
+                return '<a href="'.$page->getUri().'">' . $matches[2] . '</a>';
+            } else {
+                return $matches[2];
+            }
+        }
+
+        return '';
     }
 }
