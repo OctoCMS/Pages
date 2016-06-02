@@ -1,6 +1,6 @@
 <script>
-    window.typeId = {@id};
-    window.typeConfig = {@definition.asJson};
+    window.typeId = {{ id }};
+    window.typeConfig = {{ definition|json_encode|raw }};
 </script>
 
 
@@ -8,21 +8,21 @@
     <div class="col-lg-12">
         <div class="nav-tabs-custom">
             <ul class="nav nav-tabs">
-                {for definition}
-                <li class="tab-{@key} {if key == activeTab}active{/if}" data-key="{@key}">
-                    <a href="#tab_{@key}" data-toggle="tab">
-                        <span class="tab-title" contenteditable="false">{@value.name}</span>
-                        {ifnot value.protected}<span class="fa fa-close"></span>{/ifnot}
+                {% for tabId, tab in definition %}
+                <li class="tab-{{ tabId }}{{ tabId == activeTab ? " active" : "" }}" data-key="{{ tabId }}">
+                    <a href="#tab_{{ tabId }}" data-toggle="tab">
+                        <span class="tab-title" contenteditable="false">{{ tab.name }}</span>
+                        {% if tab.protected == false %}<span class="fa fa-close"></span>{% endif %}
                     </a>
                 </li>
-                {/for}
+                {% endfor %}
 
                 <li class="pull-right"><a href="#" class="add-tab text-muted"><i class="fa fa-plus"></i> Add Tab</a></li>
             </ul>
             <div class="tab-content">
-                {for definition}
-                <!-- {@value.name} -->
-                <div data-key="{@key}" class="tab-pane {if key == activeTab}active{/if}" id="tab_{@key}">
+                {% for tabId, tab in definition %}
+                <!-- {{ tab.name }} -->
+                <div data-key="{{ tabId }}" class="tab-pane{{ tabId == activeTab ? " active" : "" }}" id="tab_{{ tabId }}">
 
 
                     <div class="box-group" id="accordion">
@@ -37,33 +37,31 @@
                             </div>
                             <div id="newProperty" class="panel-collapse collapse in" aria-expanded="true">
                                 <div class="box-body">
-                                    {include template: "ContentType/property-form"; blockTypes: blockTypes}
+                                    {% include "@admin/ContentType/property-form.twig" %}
                                 </div>
                             </div>
                         </div>
 
-                        {for value.properties}
-
+                        {% for propertyId, prop in tab.properties %}
                         <div class="panel box">
                             <div class="box-header with-border">
-                                <button data-key="{@key}" style="font-size: 0.8" class="pull-right btn btn-default remove-property">
+                                <button data-key="{{ propertyId }}" style="font-size: 0.8" class="pull-right btn btn-default remove-property">
                                     <i class="fa fa-close"></i> Remove
                                 </button>
 
                                 <h4 class="box-title">
-                                    <a data-toggle="collapse" data-parent="#accordion" href="#property-{@key}" class="collapsed" aria-expanded="false">
-                                        {@value.name}
+                                    <a data-toggle="collapse" data-parent="#accordion" href="#property-{{ propertyId }}" class="collapsed" aria-expanded="false">
+                                        {{ prop.name }}
                                     </a>
                                 </h4>
                             </div>
-                            <div id="property-{@key}" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                            <div id="property-{{ propertyId }}" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
                                 <div class="box-body">
-                                    {include template: "ContentType/property-form"; property: value; key: key; blockTypes: blockTypes}
+                                    {% include "@admin/ContentType/property-form.twig" %}
                                 </div>
                             </div>
                         </div>
-
-                        {/for}
+                        {% endfor %}
 
                     </div>
 
@@ -71,8 +69,8 @@
 
 
                 </div>
-                <!-- / {@value.name} -->
-                {/for}
+                <!-- / {{ tab.name }} -->
+                {% endfor %}
             </div><!-- /.tab-content -->
         </div>
     </div>

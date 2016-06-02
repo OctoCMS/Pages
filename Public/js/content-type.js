@@ -115,7 +115,13 @@ function attachEvents()
 
         window.typeConfig[tab].properties[$(this).find('input[name=key]').val()] = property;
 
-        saveTypeConfig();
+        var btn = $(this).find('button.btn-primary')
+                         .removeClass('btn-primary').addClass('btn-warning')
+                         .html('<i class="fa fa-refresh fa-spin"></i> Saving...');
+
+        saveTypeConfig(function () {
+            btn.removeClass('btn-warning').addClass('btn-primary').html('Save')
+        });
     });
 
     $('.remove-property').on('click', function (e) {

@@ -17,7 +17,7 @@ use Octo\Admin\Controller;
 use Octo\Block;
 use Octo\Pages\Model\ContentType;
 use Octo\Store;
-use Octo\Admin\Template;
+use Octo\Template;
 
 class ContentTypeController extends Controller
 {
@@ -239,10 +239,9 @@ class ContentTypeController extends Controller
         $type->setValues($this->getParams());
 
         $type = $this->store->save($type);
-
-        $this->response->disableLayout();
         $tab = $this->getParam('activeTab', 0);
-        $this->view = $this->getPropertyEditor($type->getId(), $tab, $type->getDefinition());
+        
+        $this->template = $this->getPropertyEditor($type->getId(), $tab, $type->getDefinition());
     }
 
     protected function getPropertyEditor($typeId, $activeTab, $definition)
@@ -261,7 +260,7 @@ class ContentTypeController extends Controller
             return 0;
         });
 
-        $view = Template::getAdminTemplate('ContentType/property-editor');
+        $view = new Template('ContentType/property-editor', 'admin');
         $view->activeTab = $activeTab;
         $view->id = $typeId;
         $view->definition = json_decode($definition, true);

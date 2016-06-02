@@ -1,28 +1,28 @@
 <form class="form new-property-form" data->
     <section class="form-group  ">
         <label class="">Name</label>
-        <input required class="form-control" name="name" value="{@property.name}">
+        <input required class="form-control" name="name" value="{{ prop.name }}">
     </section>
 
     <section class="form-group  ">
         <label class="">Key (in camelCase)</label>
-        <input{if key} disabled{/if} required pattern="[a-z][a-zA-Z0-9]+" class="form-control" name="key" value="{@key}">
+        <input{% if propertyId %} disabled{% endif %} required pattern="[a-z][a-zA-Z0-9]+" class="form-control" name="key" value="{{ propertyId }}">
     </section>
 
     <section class="form-group  ">
         <label class="">Description</label>
-        <input class="form-control" name="description" value="{@property.description}">
+        <input class="form-control" name="description" value="{{ prop.description }}">
     </section>
 
     <section class="form-group  ">
-        <label class="">Type {@parent.key}</label>
+        <label class="">Type</label>
 
 
 
         <select required class="form-control select2" name="type">
-            {for blockTypes}
-            <option value="{@key}"{if property.type == key} selected{/if}>{@value.title}</option>
-            {/for}
+            {% for blockId, block in blockTypes %}
+            <option value="{{ blockId }}"{% if prop.type == blockId %} selected{% endif %}>{{ block.title }}</option>
+            {% endfor %}
         </select>
     </section>
 
