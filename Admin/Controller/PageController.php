@@ -450,7 +450,7 @@ class PageController extends Controller
                 $page->setPublishDate(empty($pageData['publish_date']) ? null : $pageData['publish_date']);
             }
 
-            if (array_key_exists('publish_date', $pageData)) {
+            if (array_key_exists('expiry_date', $pageData)) {
                 $page->setExpiryDate(empty($pageData['expiry_date']) ? null : $pageData['expiry_date']);
             }
 
@@ -466,7 +466,7 @@ class PageController extends Controller
 
             $latest = $this->pageStore->getLatestVersion($page);
 
-            if (array_key_exists('image_id', $pageData) && empty($pageData['image_id'])) {
+            if (empty($pageData['image_id'])) {
                 $latest->setImageId(null);
                 unset($pageData['image_id']);
             }
