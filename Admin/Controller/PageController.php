@@ -92,7 +92,12 @@ class PageController extends Controller
             $this->view->pages = $pages;
             $this->view->open = $this->getParam('open', []);
         } else {
-            $pages = $this->pageStore->getByParentId($parentId, ['order' => [['position', 'ASC']]]);
+            $pages = $this->pageStore->getByParentId($parentId, [
+                'order' => [
+                    ['position', 'ASC'],
+                    ['publish_date', 'DESC']
+                ]
+            ]);
 
             $list = AdminTemplate::getAdminTemplate('Page/list');
             $list->pages = $pages;
@@ -337,11 +342,11 @@ class PageController extends Controller
             }
         }
 
-        $this->view->page = $page;
-        $this->view->latest = $latest;
-        $this->view->blocks = $blockTypes;
-        $this->view->contentDefinition = $contentDefinition;
-        $this->view->pages = json_encode($this->pageStore->getParentPageOptions());
+        $this->template->page = $page;
+        $this->template->latest = $latest;
+        $this->template->blocks = $blockTypes;
+        $this->template->contentDefinition = $contentDefinition;
+        $this->template->pages = json_encode($this->pageStore->getParentPageOptions());
 
         $form = $this->getPageDetailsForm('edit', $page->getContentType());
 
@@ -368,12 +373,12 @@ class PageController extends Controller
             $form->getChild('element-fieldset')->removeChild('parent_id');
         }
 
-        $this->view->pageDetailsForm = $form;
+        $this->template->pageDetailsForm = $form;
 
         if ($latest->getContentItemId()) {
-            $this->view->pageContent = $latest->getContentItem()->getContent();
+            $this->template->pageContent = $latest->getContentItem()->getContent();
         } else {
-            $this->view->pageContent = '{}';
+            $this->template->pageContent = '{}';
         }
     }
 
