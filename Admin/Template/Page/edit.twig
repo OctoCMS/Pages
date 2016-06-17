@@ -13,10 +13,12 @@
                     <li class="active"><a href="#preview" data-toggle="tab"><i class="fa fa-search"></i> Page Preview</a></li>
                     <li><a href="#details" data-toggle="tab"><i class="fa fa-info-circle"></i> Page Details</a></li>
 
+                    {% set i = 0 %}
                     {% for key, tab in contentDefinition %}
+                        {% set i = i + 1 %}
                         {% if tab.properties|length > 0 %}
                         <li>
-                            <a href="#tab_{{ key}}" data-toggle="tab">{{ tab.name }}</a>
+                            <a href="#tab_{{ i  }}" data-toggle="tab">{{ tab.name }}</a>
                         </li>
                         {% endif %}
                     {% endfor %}
@@ -30,10 +32,11 @@
                     <div class="tab-pane" id="details">
                         {{ pageDetailsForm|raw }}
                     </div>
-
+                    {% set i = 0 %}
                     {% for key, tab in contentDefinition %}
+                        {% set i = i + 1 %}
                         {% if tab.properties|length > 0 %}
-                            <div class="tab-pane" id="tab_{{ key }}">
+                            <div class="tab-pane" id="tab_{{ i }}">
                                 {% for property in tab.properties %}
                                 <div class="row block-editor">
                                     <div class="col-lg-2"><h4>{{ property.name }}</h4></div>
