@@ -16,108 +16,49 @@ use Octo\Pages\Model\PageVersion;
  * Page Store
  * @uses Octo\Pages\Store\Base\PageStoreBase
  */
-class PageStore extends Octo\Store
+class PageStore extends Base\PageStoreBase
 {
-    use Base\PageStoreBase;
-
-    /**
+	/**
      * Get the homepage for the current site.
-     * @param string $useConnection
      * @return Page
      */
-    public function getHomepage($useConnection = 'read')
+    public function getHomepage()
     {
-        // $query = 'SELECT * FROM page WHERE parent_id IS NULL';
-        $query = 'SELECT * FROM page WHERE uri="/"';
-        $stmt = Database::getConnection($useConnection)->prepare($query);
-
-        if ($stmt->execute()) {
-            if ($data = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-                return new Page($data);
-            }
-        }
-
-        return null;
+        return $this->where('uri', '/')->first();
     }
 
     public function getAll()
     {
-        $query = 'SELECT * FROM page';
-        $stmt = Database::getConnection('read')->prepare($query);
-
-        if ($stmt->execute()) {
-            $res = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-
-            $map = function ($item) {
-                return new Page($item);
-            };
-            $rtn = array_map($map, $res);
-
-            return $rtn;
-        } else {
-            return array();
-        }
+        return $this->find()->get();
     }
 
     /**
      * Get the total number of pages in the system.
-     * @param string $useConnection
      * @return int
      */
-    public function getTotal($useConnection = 'read')
+    public function getTotal() : int
     {
-        $query = 'SELECT COUNT(*) AS cnt FROM page';
-        $stmt = Database::getConnection($useConnection)->prepare($query);
-
-        if ($stmt->execute()) {
-            if ($data = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-                return $data['cnt'];
-            }
-        }
-
-        return 0;
+        return $this->find()->count();
     }
 
     /**
      * Get the number of child pages for a given page.
      * @param Page $page
-     * @param string $useConnection
      * @return int
      */
-    public function getChildrenCount(Page $page, $useConnection = 'read')
+    public function getChildrenCount(Page $page)
     {
-        $query = 'SELECT COUNT(*) AS cnt FROM page WHERE parent_id = :parent';
-        $stmt = Database::getConnection($useConnection)->prepare($query);
-        $stmt->bindValue(':parent', $page->getId());
-
-        if ($stmt->execute()) {
-            if ($data = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-                return $data['cnt'];
-            }
-        }
-
-        return 0;
+        return $this->where('parent_id', $page->getId())->count();
     }
 
     /**
      * Get the latest version of a given page from the database.
      * @param Page $page
-     * @param string $useConnection
      * @return PageVersion
      */
     public function getLatestVersion(Page $page, $useConnection = 'read')
     {
-        $query = 'SELECT * FROM page_version WHERE page_id = :pageId ORDER BY version DESC LIMIT 1';
-        $stmt = Database::getConnection($useConnection)->prepare($query);
-        $stmt->bindValue(':pageId', $page->getId());
-
-        if ($stmt->execute()) {
-            if ($data = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-                return new PageVersion($data);
-            }
-        }
-
-        return null;
+        return $page->PageVersions()->order('version', 'DESC')->first();
     }
 
     public function getParentPageOptions($options = null, $parent = null, $prefix = '')
@@ -145,57 +86,19 @@ class PageStore extends Octo\Store
 
     public function getLatest($limit = 10)
     {
-        $query = 'SELECT * FROM `page` LIMIT :limit';
-        $stmt = Database::getConnection('read')->prepare($query);
-        $stmt->bindValue(':limit', $limit, Database::PARAM_INT);
-
-        if ($stmt->execute()) {
-            $res = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-
-            $map = function ($item) {
-                return new Page($item);
-            };
-            $rtn = array_map($map, $res);
-
-            return $rtn;
-        } else {
-            return [];
-        }
+        return $this->find()
+            ->join('page_version', 'page_version.id', 'page.current_version_id')
+            ->order('page_version.id', 'DESC')
+            ->limit($limit)
+            ->get();
     }
 
     public function search($query)
     {
-        $query = 'SELECT p.* FROM page p
-            LEFT JOIN page_version v ON v.id = p.current_version_id
-            WHERE (title LIKE \'%'.$query.'%\' OR short_title LIKE \'%'.$query.'%\' OR p.id = \''.$query.'\')';
-
-        $stmt = Database::getConnection('read')->prepare($query);
-
-        if ($stmt->execute()) {
-            $res = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-
-            $map = function ($item) {
-                return new Page($item);
-            };
-            $rtn = array_map($map, $res);
-
-            return $rtn;
-        } else {
-            return [];
-        }
-    }
-
-    public function getUriBestMatch($uri)
-    {
-        $query = new Query($this->getNamespace('Page').'\Model\Page');
-        $query->select('*')->from('page')->where(":uri LIKE CONCAT(uri, '%')")->order('LENGTH(uri)', 'DESC')->limit(1);
-        $query->bind(':uri', $uri);
-
-        if ($query->execute()) {
-            return $query->fetch();
-        }
-
-        return null;
+        return $this->find()
+            ->join('page_version', 'page_version.id', 'page.current_version_id')
+            ->rawWhere('(title LIKE \'%'.$query.'%\' OR short_title LIKE \'%'.$query.'%\' OR page.id = \''.$query.'\')')
+            ->get();
     }
 
     public function getModelsToIndex()

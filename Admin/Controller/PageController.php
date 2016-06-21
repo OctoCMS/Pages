@@ -71,7 +71,8 @@ class PageController extends Controller
         foreach (Store::get('ContentType')->all() as $type) {
             $thisTypes = [];
 
-            foreach ($type->getAllowedChildTypes() as $childType) {
+            $childTypes = $type->getAllowedChildTypes() ?: [];
+            foreach ($childTypes as $childType) {
                 $thisTypes[$childType->getId()] = ['name' => $childType->getName(), 'icon' => $childType->getIcon()];
             }
 
@@ -92,12 +93,10 @@ class PageController extends Controller
             $this->view->pages = $pages;
             $this->view->open = $this->getParam('open', []);
         } else {
-            $pages = $this->pageStore->getByParentId($parentId, [
-                'order' => [
-                    ['position', 'ASC'],
-                    ['publish_date', 'DESC']
-                ]
-            ]);
+            $pages = $this->pageStore->where('parent_id', $parentId)
+                ->order('position', 'ASC')
+                ->order('publish_date', 'DESC')
+                ->get();
 
             $list = AdminTemplate::getAdminTemplate('Page/list');
             $list->pages = $pages;
@@ -158,8 +157,9 @@ class PageController extends Controller
             $fieldset->addField(Form\Element\Text::create('meta_description', 'Meta Description', true));
         }
 
+        $allowedTemplates = $contentType->getAllowedTemplates() ?: [];
         $templates = [];
-        foreach ($contentType->getAllowedTemplates() as $template) {
+        foreach ($allowedTemplates as $template) {
             $templates[$template] = ucwords($template);
 
         }
@@ -229,7 +229,7 @@ class PageController extends Controller
         $page->setExpiryDate($this->getParam('expiry_date', null));
 
         /** @var \Octo\Pages\Model\Page $page */
-        $page = $this->pageStore->saveByInsert($page);
+        $page = $this->pageStore->insert($page);
 
         // Set up the current version of the page:
         $version->setValues($this->getParams());
@@ -261,10 +261,10 @@ class PageController extends Controller
             $contentObject->setId($hash);
             $contentObject->setContent($content);
 
-            $this->contentStore->saveByInsert($contentObject);
+            $this->contentStore->insert($contentObject);
         }
         $version->setContentItemId($hash);
-        $version = $this->versionStore->saveByInsert($version);
+        $version = $this->versionStore->insert($version);
 
         $page->setCurrentVersion($version);
 
@@ -284,7 +284,7 @@ class PageController extends Controller
         $latest = $this->pageStore->getLatestVersion($page);
 
         if ($page->getCurrentVersionId() == $latest->getId()) {
-            $data = $latest->getDataArray();
+            $data = $latest->toArray();
             $data['version']++;
             unset($data['id']);
 
@@ -294,6 +294,8 @@ class PageController extends Controller
 
         $latest->setUpdatedDate(new \DateTime());
         $latest->setUser($this->currentUser);
+
+        /** @var PageVersion $latest */
         $latest = $this->versionStore->save($latest);
 
         $this->setTitle($latest->getTitle(), 'Manage Pages');
@@ -305,7 +307,7 @@ class PageController extends Controller
         $pageContent = [];
 
         if ($latest->getContentItemId()) {
-            $pageContent = json_decode($latest->getContentItem()->getContent(), true);
+            $pageContent = $latest->getContentItem()->getContent();
         }
 
         $tabId = 0;
@@ -357,8 +359,8 @@ class PageController extends Controller
             $image->setOptions([$imageId => $latest->getImage()->getTitle()]);
         }
 
-        $form->setValues($page->getDataArray());
-        $form->setValues($latest->getDataArray());
+        $form->setValues($page->toArray());
+        $form->setValues($latest->toArray());
 
         if ($page->getPublishDate()) {
             $form->setValues(['publish_date' => $page->getPublishDate()->format('Y-m-d H:i')]);
@@ -380,21 +382,6 @@ class PageController extends Controller
         } else {
             $this->template->pageContent = '{}';
         }
-    }
-
-
-
-    protected function parseTemplate($template)
-    {
-        $blocks = array();
-        $template = Template::load($template);
-        $template->addFunction('block', function ($args) use (&$blocks) {
-            $blocks[] = $args;
-        });
-
-        $template->render();
-
-        return $blocks;
     }
 
     public function editPing($pageId)
@@ -432,7 +419,7 @@ class PageController extends Controller
                     $contentObject->setId($hash);
                     $contentObject->setContent($content);
 
-                    $this->contentStore->saveByInsert($contentObject);
+                    $this->contentStore->replace($contentObject);
                 }
 
                 $latest->setContentItemId($hash);
@@ -467,7 +454,7 @@ class PageController extends Controller
                 $page->generateUri();
             }
 
-            $this->pageStore->saveByUpdate($page);
+            $this->pageStore->update($page);
 
             $latest = $this->pageStore->getLatestVersion($page);
 
@@ -545,9 +532,9 @@ class PageController extends Controller
         $newPage->setPublishDate(null);
         $newPage->generateId();
 
-        $newPage = $this->pageStore->saveByInsert($newPage);
+        $newPage = $this->pageStore->insert($newPage);
 
-        $copyContent = $latest->getDataArray();
+        $copyContent = $latest->toArray();
         $copyContent['version'] = 1;
         $copyContent['page_id'] = $newPage->getId();
         $copyContent['title'] = 'Copy of ' . $latest->getTitle();
@@ -562,7 +549,7 @@ class PageController extends Controller
 
         $newPage->setCurrentVersion($newVersion);
         $newPage->generateUri();
-        $newPage = $this->pageStore->saveByUpdate($newPage);
+        $newPage = $this->pageStore->update($newPage);
 
         $this->redirect('/page/edit/' . $newPage->getId());
     }
@@ -577,11 +564,12 @@ class PageController extends Controller
             return;
         }
 
+        $shortTitle = $page->getCurrentVersion()->getShortTitle();
         $this->pageStore->delete($page);
 
-        Log::create(Log::TYPE_DELETE, 'page', $page->getCurrentVersion()->getTitle(), $page->getId());
+        Log::create(Log::TYPE_DELETE, 'page', $shortTitle, $page->getId());
+        $this->successMessage($shortTitle. ' has been deleted.', true);
 
-        $this->successMessage($page->getCurrentVersion()->getShortTitle() . ' has been deleted.', true);
         $this->redirect('/page');
     }
 

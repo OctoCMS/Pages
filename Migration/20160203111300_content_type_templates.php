@@ -15,9 +15,10 @@ class ContentTypeTemplates extends AbstractMigration
      */
     public function change()
     {
-        $this
-            ->table('content_type')
-            ->addColumn('allowed_templates', 'text', ['limit' => MysqlAdapter::TEXT_REGULAR])
-            ->save();
+        $table = $this->table('content_type');
+
+        if (!$table->hasColumn('allowed_templates')) {
+            $table->addColumn('allowed_templates', 'text', ['limit' => MysqlAdapter::TEXT_REGULAR])->save();
+        }
     }
 }

@@ -22,52 +22,28 @@ class TemplateFunctions extends Listener
 
     protected function getPages($parentId, $limit = 15, $random = false)
     {
-        /**
-         * @var $pageStore \Octo\Pages\Store\PageStore
-         */
-        $pageStore = Store::get('Page');
-
         if (empty($parentId)) {
             return [];
         }
+        
+        $query = Store::get('Page')
+            ->where('parent_id', $parentId)
+            ->rawWhere('(publish_date IS NULL OR publish_date <= NOW())')
+            ->rawWhere('(expiry_date IS NULL OR expiry_date > NOW())')
+            ->limit((int)$limit);
 
         $page = isset($_REQUEST['p']) ? (int)$_REQUEST['p'] : 0;
 
         if (!empty($page)) {
-            $offset = $page * $limit;
-        } else {
-            $offset = 0;
+            $query->offset($page * $limit);
         }
 
         if ($random) {
-            $order = [['RAND()', '']];
+            $query->order('RAND()', '');
         } else {
-            $order = [['position', 'ASC'], ['publish_date', 'DESC']];
+            $query->order('position', 'ASC')->order('publish_date', 'DESC');
         }
 
-        $rtn = $pageStore->getByParentId($parentId, ['order' => $order, 'limit' => $limit, 'offset' => $offset]);
-
-        // Filter out unpublished, or expired items.
-        $rtn = $rtn->where(function (Page $item) {
-            $expiry = $item->getExpiryDate();
-            $publish = $item->getPublishDate();
-            $now = new \DateTime();
-            
-            if (empty($publish) || $publish > $now) {
-                return false;
-            }
-
-            if (!empty($expiry) && $expiry <= $now) {
-                return false;
-            }
-
-            return true;
-        });
-
-        if (empty($rtn)) {
-            $rtn = [];
-        }
-
-        return $rtn;
+        return $query->get();
     }
 }

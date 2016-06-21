@@ -10,11 +10,9 @@ use Octo;
 /**
  * ContentType Model
  */
-class ContentType extends Octo\Model
+class ContentType extends Base\ContentTypeBase
 {
-    use Base\ContentTypeBase;
-
-    /**
+	/**
      * @return array
      */
     public function getFullDefinition($inherited = false)
@@ -25,7 +23,7 @@ class ContentType extends Octo\Model
             $rtn = $this->getParent()->getFullDefinition(true);
         }
 
-        $def = json_decode($this->getDefinition(), true);
+        $def = $this->getDefinition() ?: [];
 
         foreach ($def as $tab) {
             if (!array_key_exists($tab['name'], $rtn)) {
@@ -44,42 +42,7 @@ class ContentType extends Octo\Model
 
         return $rtn;
     }
-
-    public function setAllowedChildren($value)
-    {
-        if (is_array($value)) {
-            $value = json_encode($value);
-        }
-
-        if (empty($value)) {
-            $value = null;
-        }
-
-        $this->validateString('AllowedChildren', $value);
-
-        if ($this->data['allowed_children'] === $value) {
-            return;
-        }
-
-        $this->data['allowed_children'] = $value;
-        $this->setModified('allowed_children');
-    }
-
-    public function getAllowedChildren()
-    {
-        $rtn = $this->data['allowed_children'];
-
-        if (!empty($rtn)) {
-            $rtn = json_decode($rtn, true);
-        } else {
-            $rtn = [];
-        }
-
-        return $rtn;
-    }
-
-
-
+    
     public function getAllowedChildTypes()
     {
         $rtn = [];
@@ -90,39 +53,6 @@ class ContentType extends Octo\Model
             foreach ($allowed as $childId) {
                 $rtn[$childId] = Octo\Store::get('ContentType')->getById($childId);
             }
-        }
-
-        return $rtn;
-    }
-
-    public function setAllowedTemplates($value)
-    {
-        if (is_array($value)) {
-            $value = json_encode($value);
-        }
-
-        if (empty($value)) {
-            $value = null;
-        }
-
-        $this->validateString('AllowedTemplates', $value);
-
-        if ($this->data['allowed_templates'] === $value) {
-            return;
-        }
-
-        $this->data['allowed_templates'] = $value;
-        $this->setModified('allowed_templates');
-    }
-
-    public function getAllowedTemplates()
-    {
-        $rtn = $this->data['allowed_templates'];
-
-        if (!empty($rtn)) {
-            $rtn = json_decode($rtn, true);
-        } else {
-            $rtn = [];
         }
 
         return $rtn;

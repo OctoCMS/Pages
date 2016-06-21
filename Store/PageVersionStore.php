@@ -12,7 +12,6 @@ use Octo;
  * PageVersion Store
  * @uses Octo\Pages\Store\Base\PageVersionStoreBase
  */
-class PageVersionStore extends Octo\Store
+class PageVersionStore extends Base\PageVersionStoreBase
 {
-    use Base\PageVersionStoreBase;
-}
+	}

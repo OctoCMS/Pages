@@ -2,16 +2,11 @@
 
 /**
  * ContentType base store for table: content_type
+
  */
 
 namespace Octo\Pages\Store\Base;
 
-use PDOException;
-use b8\Cache;
-use b8\Database;
-use b8\Database\Query;
-use b8\Database\Query\Criteria;
-use b8\Exception\StoreException;
 use Octo\Store;
 use Octo\Pages\Model\ContentType;
 use Octo\Pages\Model\ContentTypeCollection;
@@ -19,113 +14,57 @@ use Octo\Pages\Model\ContentTypeCollection;
 /**
  * ContentType Base Store
  */
-trait ContentTypeStoreBase
+class ContentTypeStoreBase extends Store
 {
-    protected function init()
-    {
-        $this->tableName = 'content_type';
-        $this->modelName = '\Octo\Pages\Model\ContentType';
-        $this->primaryKey = 'id';
-    }
+    protected $table = 'content_type';
+    protected $model = 'Octo\Pages\Model\ContentType';
+    protected $key = 'id';
+
     /**
     * @param $value
-    * @param string $useConnection Connection type to use.
-    * @throws StoreException
-    * @return ContentType
+    * @return ContentType|null
     */
-    public function getByPrimaryKey($value, $useConnection = 'read')
+    public function getByPrimaryKey($value)
     {
-        return $this->getById($value, $useConnection);
+        return $this->getById($value);
     }
 
 
     /**
-    * @param $value
-    * @param string $useConnection Connection type to use.
-    * @throws StoreException
-    * @return ContentType
-    */
-    public function getById($value, $useConnection = 'read')
+     * Get a ContentType object by Id.
+     * @param $value
+     * @return ContentType|null
+     */
+    public function getById(int $value)
     {
-        if (is_null($value)) {
-            throw new StoreException('Value passed to ' . __FUNCTION__ . ' cannot be null.');
-        }
         // This is the primary key, so try and get from cache:
-        $cacheResult = $this->getFromCache($value);
+        $cacheResult = $this->cacheGet($value);
 
         if (!empty($cacheResult)) {
             return $cacheResult;
         }
 
+        $rtn = $this->where('id', $value)->first();
+        $this->cacheSet($value, $rtn);
 
-        $query = new Query($this->getNamespace('ContentType').'\Model\ContentType', $useConnection);
-        $query->select('*')->from('content_type')->limit(1);
-        $query->where('`id` = :id');
-        $query->bind(':id', $value);
-
-        try {
-            $query->execute();
-            $result = $query->fetch();
-
-            $this->setCache($value, $result);
-
-            return $result;
-        } catch (PDOException $ex) {
-            throw new StoreException('Could not get ContentType by Id', 0, $ex);
-        }
+        return $rtn;
     }
 
     /**
-     * @param $value
-     * @param array $options Offsets, limits, etc.
-     * @param string $useConnection Connection type to use.
-     * @throws StoreException
+     * Get all ContentType objects by ParentId.
+     * @return \Octo\Pages\Model\ContentTypeCollection
+     */
+    public function getByParentId($value, $limit = null)
+    {
+        return $this->where('parent_id', $value)->get($limit);
+    }
+
+    /**
+     * Gets the total number of ContentType by ParentId value.
      * @return int
      */
-    public function getTotalForParentId($value, $options = [], $useConnection = 'read')
+    public function getTotalByParentId($value) : int
     {
-        if (is_null($value)) {
-            throw new StoreException('Value passed to ' . __FUNCTION__ . ' cannot be null.');
-        }
-
-        $query = new Query($this->getNamespace('ContentType').'\Model\ContentType', $useConnection);
-        $query->from('content_type')->where('`parent_id` = :parent_id');
-        $query->bind(':parent_id', $value);
-
-        $this->handleQueryOptions($query, $options);
-
-        try {
-            return $query->getCount();
-        } catch (PDOException $ex) {
-            throw new StoreException('Could not get count of ContentType by ParentId', 0, $ex);
-        }
-    }
-
-    /**
-     * @param $value
-     * @param array $options Limits, offsets, etc.
-     * @param string $useConnection Connection type to use.
-     * @throws StoreException
-     * @return ContentTypeCollection
-     */
-    public function getByParentId($value, $options = [], $useConnection = 'read')
-    {
-        if (is_null($value)) {
-            throw new StoreException('Value passed to ' . __FUNCTION__ . ' cannot be null.');
-        }
-
-        $query = new Query($this->getNamespace('ContentType').'\Model\ContentType', $useConnection);
-        $query->from('content_type')->where('`parent_id` = :parent_id');
-        $query->bind(':parent_id', $value);
-
-        $this->handleQueryOptions($query, $options);
-
-        try {
-            $query->execute();
-            return new ContentTypeCollection($query->fetchAll());
-        } catch (PDOException $ex) {
-            throw new StoreException('Could not get ContentType by ParentId', 0, $ex);
-        }
-
+        return $this->where('parent_id', $value)->count();
     }
 }

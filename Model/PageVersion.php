@@ -10,11 +10,9 @@ use Octo;
 /**
  * PageVersion Model
  */
-class PageVersion extends Octo\Model
+class PageVersion extends Base\PageVersionBase
 {
-    use Base\PageVersionBase;
-
-    public function __get($key)
+	public function __get($key)
     {
         return $this->getVariable($key);
     }
@@ -28,7 +26,7 @@ class PageVersion extends Octo\Model
         }
 
         // Try page content:
-        $content = json_decode($this->getContentItem()->getContent(), true);
+        $content = $this->getContentItem()->getContent();
 
         if (!empty($content[$key])) {
             return $content[$key];
@@ -44,7 +42,7 @@ class PageVersion extends Octo\Model
 
     public function hasContent($key)
     {
-        $content = json_decode($this->getContentItem()->getContent(), true);
+        $content = $this->getContentItem()->getContent();
         return !empty($content[$key]);
     }
 }

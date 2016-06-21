@@ -14,11 +14,9 @@ use Octo\Utilities\StringUtilities;
  * Page Model
  * @uses Octo\Pages\Model\Base\PageBaseBase
  */
-class Page extends Octo\Model
+class Page extends Base\PageBase
 {
-    use Base\PageBase;
-
-    public function __construct($initialData = array())
+	public function __construct($initialData = array())
     {
         parent::__construct($initialData);
         $this->getters['hasChildren'] = 'hasChildren';
@@ -108,6 +106,10 @@ class Page extends Octo\Model
         }
     }
 
+    /**
+     * @return PageVersion|null
+     * @throws \Block8\Database\Exception
+     */
     public function getLatestVersion()
     {
         return Store::get('Page')->getLatestVersion($this);

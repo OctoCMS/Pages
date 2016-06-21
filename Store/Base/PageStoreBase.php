@@ -2,16 +2,11 @@
 
 /**
  * Page base store for table: page
+
  */
 
 namespace Octo\Pages\Store\Base;
 
-use PDOException;
-use b8\Cache;
-use b8\Database;
-use b8\Database\Query;
-use b8\Database\Query\Criteria;
-use b8\Exception\StoreException;
 use Octo\Store;
 use Octo\Pages\Model\Page;
 use Octo\Pages\Model\PageCollection;
@@ -19,249 +14,103 @@ use Octo\Pages\Model\PageCollection;
 /**
  * Page Base Store
  */
-trait PageStoreBase
+class PageStoreBase extends Store
 {
-    protected function init()
-    {
-        $this->tableName = 'page';
-        $this->modelName = '\Octo\Pages\Model\Page';
-        $this->primaryKey = 'id';
-    }
+    protected $table = 'page';
+    protected $model = 'Octo\Pages\Model\Page';
+    protected $key = 'id';
+
     /**
     * @param $value
-    * @param string $useConnection Connection type to use.
-    * @throws StoreException
-    * @return Page
+    * @return Page|null
     */
-    public function getByPrimaryKey($value, $useConnection = 'read')
+    public function getByPrimaryKey($value)
     {
-        return $this->getById($value, $useConnection);
+        return $this->getById($value);
     }
 
 
     /**
-    * @param $value
-    * @param string $useConnection Connection type to use.
-    * @throws StoreException
-    * @return Page
-    */
-    public function getById($value, $useConnection = 'read')
+     * Get a Page object by Id.
+     * @param $value
+     * @return Page|null
+     */
+    public function getById(string $value)
     {
-        if (is_null($value)) {
-            throw new StoreException('Value passed to ' . __FUNCTION__ . ' cannot be null.');
-        }
         // This is the primary key, so try and get from cache:
-        $cacheResult = $this->getFromCache($value);
+        $cacheResult = $this->cacheGet($value);
 
         if (!empty($cacheResult)) {
             return $cacheResult;
         }
 
+        $rtn = $this->where('id', $value)->first();
+        $this->cacheSet($value, $rtn);
 
-        $query = new Query($this->getNamespace('Page').'\Model\Page', $useConnection);
-        $query->select('*')->from('page')->limit(1);
-        $query->where('`id` = :id');
-        $query->bind(':id', $value);
-
-        try {
-            $query->execute();
-            $result = $query->fetch();
-
-            $this->setCache($value, $result);
-
-            return $result;
-        } catch (PDOException $ex) {
-            throw new StoreException('Could not get Page by Id', 0, $ex);
-        }
+        return $rtn;
     }
 
     /**
-     * @param $value
-     * @param array $options Offsets, limits, etc.
-     * @param string $useConnection Connection type to use.
-     * @throws StoreException
+     * Get all Page objects by ParentId.
+     * @return \Octo\Pages\Model\PageCollection
+     */
+    public function getByParentId($value, $limit = null)
+    {
+        return $this->where('parent_id', $value)->get($limit);
+    }
+
+    /**
+     * Gets the total number of Page by ParentId value.
      * @return int
      */
-    public function getTotalForParentId($value, $options = [], $useConnection = 'read')
+    public function getTotalByParentId($value) : int
     {
-        if (is_null($value)) {
-            throw new StoreException('Value passed to ' . __FUNCTION__ . ' cannot be null.');
-        }
-
-        $query = new Query($this->getNamespace('Page').'\Model\Page', $useConnection);
-        $query->from('page')->where('`parent_id` = :parent_id');
-        $query->bind(':parent_id', $value);
-
-        $this->handleQueryOptions($query, $options);
-
-        try {
-            return $query->getCount();
-        } catch (PDOException $ex) {
-            throw new StoreException('Could not get count of Page by ParentId', 0, $ex);
-        }
+        return $this->where('parent_id', $value)->count();
     }
 
     /**
-     * @param $value
-     * @param array $options Limits, offsets, etc.
-     * @param string $useConnection Connection type to use.
-     * @throws StoreException
-     * @return PageCollection
+     * Get all Page objects by CurrentVersionId.
+     * @return \Octo\Pages\Model\PageCollection
      */
-    public function getByParentId($value, $options = [], $useConnection = 'read')
+    public function getByCurrentVersionId($value, $limit = null)
     {
-        if (is_null($value)) {
-            throw new StoreException('Value passed to ' . __FUNCTION__ . ' cannot be null.');
-        }
-
-        $query = new Query($this->getNamespace('Page').'\Model\Page', $useConnection);
-        $query->from('page')->where('`parent_id` = :parent_id');
-        $query->bind(':parent_id', $value);
-
-        $this->handleQueryOptions($query, $options);
-
-        try {
-            $query->execute();
-            return new PageCollection($query->fetchAll());
-        } catch (PDOException $ex) {
-            throw new StoreException('Could not get Page by ParentId', 0, $ex);
-        }
-
+        return $this->where('current_version_id', $value)->get($limit);
     }
 
     /**
-     * @param $value
-     * @param array $options Offsets, limits, etc.
-     * @param string $useConnection Connection type to use.
-     * @throws StoreException
+     * Gets the total number of Page by CurrentVersionId value.
      * @return int
      */
-    public function getTotalForCurrentVersionId($value, $options = [], $useConnection = 'read')
+    public function getTotalByCurrentVersionId($value) : int
     {
-        if (is_null($value)) {
-            throw new StoreException('Value passed to ' . __FUNCTION__ . ' cannot be null.');
-        }
-
-        $query = new Query($this->getNamespace('Page').'\Model\Page', $useConnection);
-        $query->from('page')->where('`current_version_id` = :current_version_id');
-        $query->bind(':current_version_id', $value);
-
-        $this->handleQueryOptions($query, $options);
-
-        try {
-            return $query->getCount();
-        } catch (PDOException $ex) {
-            throw new StoreException('Could not get count of Page by CurrentVersionId', 0, $ex);
-        }
+        return $this->where('current_version_id', $value)->count();
     }
 
     /**
-     * @param $value
-     * @param array $options Limits, offsets, etc.
-     * @param string $useConnection Connection type to use.
-     * @throws StoreException
-     * @return PageCollection
+     * Get all Page objects by ContentTypeId.
+     * @return \Octo\Pages\Model\PageCollection
      */
-    public function getByCurrentVersionId($value, $options = [], $useConnection = 'read')
+    public function getByContentTypeId($value, $limit = null)
     {
-        if (is_null($value)) {
-            throw new StoreException('Value passed to ' . __FUNCTION__ . ' cannot be null.');
-        }
-
-        $query = new Query($this->getNamespace('Page').'\Model\Page', $useConnection);
-        $query->from('page')->where('`current_version_id` = :current_version_id');
-        $query->bind(':current_version_id', $value);
-
-        $this->handleQueryOptions($query, $options);
-
-        try {
-            $query->execute();
-            return new PageCollection($query->fetchAll());
-        } catch (PDOException $ex) {
-            throw new StoreException('Could not get Page by CurrentVersionId', 0, $ex);
-        }
-
+        return $this->where('content_type_id', $value)->get($limit);
     }
 
     /**
-     * @param $value
-     * @param array $options Offsets, limits, etc.
-     * @param string $useConnection Connection type to use.
-     * @throws StoreException
+     * Gets the total number of Page by ContentTypeId value.
      * @return int
      */
-    public function getTotalForContentTypeId($value, $options = [], $useConnection = 'read')
+    public function getTotalByContentTypeId($value) : int
     {
-        if (is_null($value)) {
-            throw new StoreException('Value passed to ' . __FUNCTION__ . ' cannot be null.');
-        }
-
-        $query = new Query($this->getNamespace('Page').'\Model\Page', $useConnection);
-        $query->from('page')->where('`content_type_id` = :content_type_id');
-        $query->bind(':content_type_id', $value);
-
-        $this->handleQueryOptions($query, $options);
-
-        try {
-            return $query->getCount();
-        } catch (PDOException $ex) {
-            throw new StoreException('Could not get count of Page by ContentTypeId', 0, $ex);
-        }
+        return $this->where('content_type_id', $value)->count();
     }
 
     /**
+     * Get a Page object by Uri.
      * @param $value
-     * @param array $options Limits, offsets, etc.
-     * @param string $useConnection Connection type to use.
-     * @throws StoreException
-     * @return PageCollection
+     * @return Page|null
      */
-    public function getByContentTypeId($value, $options = [], $useConnection = 'read')
+    public function getByUri(string $value)
     {
-        if (is_null($value)) {
-            throw new StoreException('Value passed to ' . __FUNCTION__ . ' cannot be null.');
-        }
-
-        $query = new Query($this->getNamespace('Page').'\Model\Page', $useConnection);
-        $query->from('page')->where('`content_type_id` = :content_type_id');
-        $query->bind(':content_type_id', $value);
-
-        $this->handleQueryOptions($query, $options);
-
-        try {
-            $query->execute();
-            return new PageCollection($query->fetchAll());
-        } catch (PDOException $ex) {
-            throw new StoreException('Could not get Page by ContentTypeId', 0, $ex);
-        }
-
-    }
-    /**
-    * @param $value
-    * @param string $useConnection Connection type to use.
-    * @throws StoreException
-    * @return Page
-    */
-    public function getByUri($value, $useConnection = 'read')
-    {
-        if (is_null($value)) {
-            throw new StoreException('Value passed to ' . __FUNCTION__ . ' cannot be null.');
-        }
-
-        $query = new Query($this->getNamespace('Page').'\Model\Page', $useConnection);
-        $query->select('*')->from('page')->limit(1);
-        $query->where('`uri` = :uri');
-        $query->bind(':uri', $value);
-
-        try {
-            $query->execute();
-            $result = $query->fetch();
-
-            $this->setCache($value, $result);
-
-            return $result;
-        } catch (PDOException $ex) {
-            throw new StoreException('Could not get Page by Uri', 0, $ex);
-        }
+        return $this->where('uri', $value)->first();
     }
 }

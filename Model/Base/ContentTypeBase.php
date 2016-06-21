@@ -6,139 +6,167 @@
 
 namespace Octo\Pages\Model\Base;
 
-use b8\Store\Factory;
+use Octo\Model;
+use Octo\Store;
 
 /**
  * ContentType Base Model
  */
-trait ContentTypeBase
+class ContentTypeBase extends Model
 {
     protected function init()
     {
-        $this->tableName = 'content_type';
-        $this->modelName = 'ContentType';
+        $this->table = 'content_type';
+        $this->model = 'ContentType';
 
         // Columns:
+        
         $this->data['id'] = null;
         $this->getters['id'] = 'getId';
         $this->setters['id'] = 'setId';
+        
         $this->data['name'] = null;
         $this->getters['name'] = 'getName';
         $this->setters['name'] = 'setName';
+        
         $this->data['parent_id'] = null;
         $this->getters['parent_id'] = 'getParentId';
         $this->setters['parent_id'] = 'setParentId';
+        
         $this->data['allowed_children'] = null;
         $this->getters['allowed_children'] = 'getAllowedChildren';
         $this->setters['allowed_children'] = 'setAllowedChildren';
+        
         $this->data['definition'] = null;
         $this->getters['definition'] = 'getDefinition';
         $this->setters['definition'] = 'setDefinition';
+        
         $this->data['icon'] = null;
         $this->getters['icon'] = 'getIcon';
         $this->setters['icon'] = 'setIcon';
+        
         $this->data['allowed_templates'] = null;
         $this->getters['allowed_templates'] = 'getAllowedTemplates';
         $this->setters['allowed_templates'] = 'setAllowedTemplates';
-
+        
         // Foreign keys:
+        
         $this->getters['Parent'] = 'getParent';
         $this->setters['Parent'] = 'setParent';
+        
     }
+
+    
     /**
-    * Get the value of Id / id.
-    *
-    * @return int
-    */
-    public function getId()
-    {
+     * Get the value of Id / id
+     * @return int
+     */
+
+     public function getId()
+     {
         $rtn = $this->data['id'];
 
         return $rtn;
-    }
-
+     }
+    
     /**
-    * Get the value of Name / name.
-    *
-    * @return string
-    */
-    public function getName()
-    {
+     * Get the value of Name / name
+     * @return string
+     */
+
+     public function getName()
+     {
         $rtn = $this->data['name'];
 
         return $rtn;
-    }
-
+     }
+    
     /**
-    * Get the value of ParentId / parent_id.
-    *
-    * @return int
-    */
-    public function getParentId()
-    {
+     * Get the value of ParentId / parent_id
+     * @return int
+     */
+
+     public function getParentId()
+     {
         $rtn = $this->data['parent_id'];
 
         return $rtn;
-    }
-
+     }
+    
     /**
-    * Get the value of AllowedChildren / allowed_children.
-    *
-    * @return string
-    */
-    public function getAllowedChildren()
-    {
+     * Get the value of AllowedChildren / allowed_children
+     * @return array|null
+     */
+
+     public function getAllowedChildren()
+     {
         $rtn = $this->data['allowed_children'];
 
-        return $rtn;
-    }
+        $rtn = json_decode($rtn, true);
 
+        if (empty($rtn)) {
+            $rtn = null;
+        }
+
+        return $rtn;
+     }
+    
     /**
-    * Get the value of Definition / definition.
-    *
-    * @return string
-    */
-    public function getDefinition()
-    {
+     * Get the value of Definition / definition
+     * @return array|null
+     */
+
+     public function getDefinition()
+     {
         $rtn = $this->data['definition'];
 
-        return $rtn;
-    }
+        $rtn = json_decode($rtn, true);
 
+        if (empty($rtn)) {
+            $rtn = null;
+        }
+
+        return $rtn;
+     }
+    
     /**
-    * Get the value of Icon / icon.
-    *
-    * @return string
-    */
-    public function getIcon()
-    {
+     * Get the value of Icon / icon
+     * @return string
+     */
+
+     public function getIcon()
+     {
         $rtn = $this->data['icon'];
 
         return $rtn;
-    }
-
+     }
+    
     /**
-    * Get the value of AllowedTemplates / allowed_templates.
-    *
-    * @return string
-    */
-    public function getAllowedTemplates()
-    {
+     * Get the value of AllowedTemplates / allowed_templates
+     * @return array|null
+     */
+
+     public function getAllowedTemplates()
+     {
         $rtn = $this->data['allowed_templates'];
 
+        $rtn = json_decode($rtn, true);
+
+        if (empty($rtn)) {
+            $rtn = null;
+        }
+
         return $rtn;
-    }
-
-
+     }
+    
+    
     /**
-    * Set the value of Id / id.
-    *
-    * Must not be null.
-    * @param $value int
-    */
-    public function setId($value)
+     * Set the value of Id / id
+     * @param $value int
+     */
+    public function setId(int $value)
     {
-        $this->validateInt('Id', $value);
+
         $this->validateNotNull('Id', $value);
 
         if ($this->data['id'] === $value) {
@@ -148,16 +176,14 @@ trait ContentTypeBase
         $this->data['id'] = $value;
         $this->setModified('id');
     }
-
+    
     /**
-    * Set the value of Name / name.
-    *
-    * Must not be null.
-    * @param $value string
-    */
-    public function setName($value)
+     * Set the value of Name / name
+     * @param $value string
+     */
+    public function setName(string $value)
     {
-        $this->validateString('Name', $value);
+
         $this->validateNotNull('Name', $value);
 
         if ($this->data['name'] === $value) {
@@ -167,20 +193,20 @@ trait ContentTypeBase
         $this->data['name'] = $value;
         $this->setModified('name');
     }
-
+    
     /**
-    * Set the value of ParentId / parent_id.
-    *
-    * @param $value int
-    */
+     * Set the value of ParentId / parent_id
+     * @param $value int
+     */
     public function setParentId($value)
     {
-        $this->validateInt('ParentId', $value);
 
-        // As this is a foreign key, empty values should be treated as null:
+
+        // As this column is a foreign key, empty values should be considered null.
         if (empty($value)) {
             $value = null;
         }
+
 
 
         if ($this->data['parent_id'] === $value) {
@@ -190,15 +216,15 @@ trait ContentTypeBase
         $this->data['parent_id'] = $value;
         $this->setModified('parent_id');
     }
-
+    
     /**
-    * Set the value of AllowedChildren / allowed_children.
-    *
-    * @param $value string
-    */
+     * Set the value of AllowedChildren / allowed_children
+     * @param $value array|null
+     */
     public function setAllowedChildren($value)
     {
-        $this->validateString('AllowedChildren', $value);
+        $this->validateJson($value);
+
 
         if ($this->data['allowed_children'] === $value) {
             return;
@@ -207,17 +233,15 @@ trait ContentTypeBase
         $this->data['allowed_children'] = $value;
         $this->setModified('allowed_children');
     }
-
+    
     /**
-    * Set the value of Definition / definition.
-    *
-    * Must not be null.
-    * @param $value string
-    */
+     * Set the value of Definition / definition
+     * @param $value array|null
+     */
     public function setDefinition($value)
     {
-        $this->validateString('Definition', $value);
-        $this->validateNotNull('Definition', $value);
+        $this->validateJson($value);
+
 
         if ($this->data['definition'] === $value) {
             return;
@@ -226,15 +250,15 @@ trait ContentTypeBase
         $this->data['definition'] = $value;
         $this->setModified('definition');
     }
-
+    
     /**
-    * Set the value of Icon / icon.
-    *
-    * @param $value string
-    */
+     * Set the value of Icon / icon
+     * @param $value string
+     */
     public function setIcon($value)
     {
-        $this->validateString('Icon', $value);
+
+
 
         if ($this->data['icon'] === $value) {
             return;
@@ -243,17 +267,15 @@ trait ContentTypeBase
         $this->data['icon'] = $value;
         $this->setModified('icon');
     }
-
+    
     /**
-    * Set the value of AllowedTemplates / allowed_templates.
-    *
-    * Must not be null.
-    * @param $value string
-    */
+     * Set the value of AllowedTemplates / allowed_templates
+     * @param $value array|null
+     */
     public function setAllowedTemplates($value)
     {
-        $this->validateString('AllowedTemplates', $value);
-        $this->validateNotNull('AllowedTemplates', $value);
+        $this->validateJson($value);
+
 
         if ($this->data['allowed_templates'] === $value) {
             return;
@@ -262,33 +284,40 @@ trait ContentTypeBase
         $this->data['allowed_templates'] = $value;
         $this->setModified('allowed_templates');
     }
+    
+    
     /**
-    * Get the ContentType model for this ContentType by Id.
-    *
-    * @uses \Octo\Pages\Store\ContentTypeStore::getById()
-    * @uses \Octo\Pages\Model\ContentType
-    * @return \Octo\Pages\Model\ContentType
-    */
+     * Get the ContentType model for this  by Id.
+     *
+     * @uses \Octo\Pages\Store\ContentTypeStore::getById()
+     * @uses \Octo\Pages\Model\ContentType
+     * @return \Octo\Pages\Model\ContentType
+     */
     public function getParent()
     {
         $key = $this->getParentId();
 
         if (empty($key)) {
-            return null;
+           return null;
         }
 
-        return Factory::getStore('ContentType', 'Octo\Pages')->getById($key);
+        return Store::get('ContentType')->getById($key);
     }
 
     /**
-    * Set Parent - Accepts an ID, an array representing a ContentType or a ContentType model.
-    *
-    * @param $value mixed
-    */
+     * Set Parent - Accepts an ID, an array representing a ContentType or a ContentType model.
+     * @throws \Exception
+     * @param $value mixed
+     */
     public function setParent($value)
     {
-        // Is this an instance of ContentType?
-        if ($value instanceof \Octo\Pages\Model\ContentType) {
+        // Is this a scalar value representing the ID of this foreign key?
+        if (is_scalar($value)) {
+            return $this->setParentId($value);
+        }
+
+        // Is this an instance of Parent?
+        if (is_object($value) && $value instanceof \Octo\Pages\Model\ContentType) {
             return $this->setParentObject($value);
         }
 
@@ -297,17 +326,27 @@ trait ContentTypeBase
             return $this->setParentId($value['id']);
         }
 
-        // Is this a scalar value representing the ID of this foreign key?
-        return $this->setParentId($value);
+        // None of the above? That's a problem!
+        throw new \Exception('Invalid value for Parent.');
     }
 
     /**
-    * Set Parent - Accepts a ContentType model.
-    *
-    * @param $value \Octo\Pages\Model\ContentType
-    */
+     * Set Parent - Accepts a ContentType model.
+     *
+     * @param $value \Octo\Pages\Model\ContentType
+     */
     public function setParentObject(\Octo\Pages\Model\ContentType $value)
     {
         return $this->setParentId($value->getId());
+    }
+
+    public function ContentTypes()
+    {
+        return Store::get('ContentType')->where('parent_id', $this->data['id']);
+    }
+
+    public function Pages()
+    {
+        return Store::get('Page')->where('content_type_id', $this->data['id']);
     }
 }

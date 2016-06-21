@@ -6,181 +6,201 @@
 
 namespace Octo\Pages\Model\Base;
 
-use b8\Store\Factory;
+use Octo\Model;
+use Octo\Store;
 
 /**
  * PageVersion Base Model
  */
-trait PageVersionBase
+class PageVersionBase extends Model
 {
     protected function init()
     {
-        $this->tableName = 'page_version';
-        $this->modelName = 'PageVersion';
+        $this->table = 'page_version';
+        $this->model = 'PageVersion';
 
         // Columns:
+        
         $this->data['id'] = null;
         $this->getters['id'] = 'getId';
         $this->setters['id'] = 'setId';
+        
         $this->data['page_id'] = null;
         $this->getters['page_id'] = 'getPageId';
         $this->setters['page_id'] = 'setPageId';
+        
         $this->data['version'] = null;
         $this->getters['version'] = 'getVersion';
         $this->setters['version'] = 'setVersion';
+        
         $this->data['title'] = null;
         $this->getters['title'] = 'getTitle';
         $this->setters['title'] = 'setTitle';
+        
         $this->data['short_title'] = null;
         $this->getters['short_title'] = 'getShortTitle';
         $this->setters['short_title'] = 'setShortTitle';
+        
         $this->data['description'] = null;
         $this->getters['description'] = 'getDescription';
         $this->setters['description'] = 'setDescription';
+        
         $this->data['meta_description'] = null;
         $this->getters['meta_description'] = 'getMetaDescription';
         $this->setters['meta_description'] = 'setMetaDescription';
+        
         $this->data['content_item_id'] = null;
         $this->getters['content_item_id'] = 'getContentItemId';
         $this->setters['content_item_id'] = 'setContentItemId';
+        
         $this->data['user_id'] = null;
         $this->getters['user_id'] = 'getUserId';
         $this->setters['user_id'] = 'setUserId';
+        
         $this->data['updated_date'] = null;
         $this->getters['updated_date'] = 'getUpdatedDate';
         $this->setters['updated_date'] = 'setUpdatedDate';
+        
         $this->data['template'] = null;
         $this->getters['template'] = 'getTemplate';
         $this->setters['template'] = 'setTemplate';
+        
         $this->data['image_id'] = null;
         $this->getters['image_id'] = 'getImageId';
         $this->setters['image_id'] = 'setImageId';
-
+        
         // Foreign keys:
+        
         $this->getters['ContentItem'] = 'getContentItem';
         $this->setters['ContentItem'] = 'setContentItem';
+        
         $this->getters['Page'] = 'getPage';
         $this->setters['Page'] = 'setPage';
+        
         $this->getters['Image'] = 'getImage';
         $this->setters['Image'] = 'setImage';
+        
         $this->getters['User'] = 'getUser';
         $this->setters['User'] = 'setUser';
+        
     }
+
+    
     /**
-    * Get the value of Id / id.
-    *
-    * @return int
-    */
-    public function getId()
-    {
+     * Get the value of Id / id
+     * @return int
+     */
+
+     public function getId()
+     {
         $rtn = $this->data['id'];
 
         return $rtn;
-    }
-
+     }
+    
     /**
-    * Get the value of PageId / page_id.
-    *
-    * @return string
-    */
-    public function getPageId()
-    {
+     * Get the value of PageId / page_id
+     * @return string
+     */
+
+     public function getPageId()
+     {
         $rtn = $this->data['page_id'];
 
         return $rtn;
-    }
-
+     }
+    
     /**
-    * Get the value of Version / version.
-    *
-    * @return int
-    */
-    public function getVersion()
-    {
+     * Get the value of Version / version
+     * @return int
+     */
+
+     public function getVersion()
+     {
         $rtn = $this->data['version'];
 
         return $rtn;
-    }
-
+     }
+    
     /**
-    * Get the value of Title / title.
-    *
-    * @return string
-    */
-    public function getTitle()
-    {
+     * Get the value of Title / title
+     * @return string
+     */
+
+     public function getTitle()
+     {
         $rtn = $this->data['title'];
 
         return $rtn;
-    }
-
+     }
+    
     /**
-    * Get the value of ShortTitle / short_title.
-    *
-    * @return string
-    */
-    public function getShortTitle()
-    {
+     * Get the value of ShortTitle / short_title
+     * @return string
+     */
+
+     public function getShortTitle()
+     {
         $rtn = $this->data['short_title'];
 
         return $rtn;
-    }
-
+     }
+    
     /**
-    * Get the value of Description / description.
-    *
-    * @return string
-    */
-    public function getDescription()
-    {
+     * Get the value of Description / description
+     * @return string
+     */
+
+     public function getDescription()
+     {
         $rtn = $this->data['description'];
 
         return $rtn;
-    }
-
+     }
+    
     /**
-    * Get the value of MetaDescription / meta_description.
-    *
-    * @return string
-    */
-    public function getMetaDescription()
-    {
+     * Get the value of MetaDescription / meta_description
+     * @return string
+     */
+
+     public function getMetaDescription()
+     {
         $rtn = $this->data['meta_description'];
 
         return $rtn;
-    }
-
+     }
+    
     /**
-    * Get the value of ContentItemId / content_item_id.
-    *
-    * @return string
-    */
-    public function getContentItemId()
-    {
+     * Get the value of ContentItemId / content_item_id
+     * @return string
+     */
+
+     public function getContentItemId()
+     {
         $rtn = $this->data['content_item_id'];
 
         return $rtn;
-    }
-
+     }
+    
     /**
-    * Get the value of UserId / user_id.
-    *
-    * @return int
-    */
-    public function getUserId()
-    {
+     * Get the value of UserId / user_id
+     * @return int
+     */
+
+     public function getUserId()
+     {
         $rtn = $this->data['user_id'];
 
         return $rtn;
-    }
-
+     }
+    
     /**
-    * Get the value of UpdatedDate / updated_date.
-    *
-    * @return \DateTime
-    */
-    public function getUpdatedDate()
-    {
+     * Get the value of UpdatedDate / updated_date
+     * @return DateTime
+     */
+
+     public function getUpdatedDate()
+     {
         $rtn = $this->data['updated_date'];
 
         if (!empty($rtn)) {
@@ -188,42 +208,40 @@ trait PageVersionBase
         }
 
         return $rtn;
-    }
-
+     }
+    
     /**
-    * Get the value of Template / template.
-    *
-    * @return string
-    */
-    public function getTemplate()
-    {
+     * Get the value of Template / template
+     * @return string
+     */
+
+     public function getTemplate()
+     {
         $rtn = $this->data['template'];
 
         return $rtn;
-    }
-
+     }
+    
     /**
-    * Get the value of ImageId / image_id.
-    *
-    * @return string
-    */
-    public function getImageId()
-    {
+     * Get the value of ImageId / image_id
+     * @return string
+     */
+
+     public function getImageId()
+     {
         $rtn = $this->data['image_id'];
 
         return $rtn;
-    }
-
-
+     }
+    
+    
     /**
-    * Set the value of Id / id.
-    *
-    * Must not be null.
-    * @param $value int
-    */
-    public function setId($value)
+     * Set the value of Id / id
+     * @param $value int
+     */
+    public function setId(int $value)
     {
-        $this->validateInt('Id', $value);
+
         $this->validateNotNull('Id', $value);
 
         if ($this->data['id'] === $value) {
@@ -233,18 +251,16 @@ trait PageVersionBase
         $this->data['id'] = $value;
         $this->setModified('id');
     }
-
+    
     /**
-    * Set the value of PageId / page_id.
-    *
-    * Must not be null.
-    * @param $value string
-    */
-    public function setPageId($value)
+     * Set the value of PageId / page_id
+     * @param $value string
+     */
+    public function setPageId(string $value)
     {
-        $this->validateString('PageId', $value);
 
-        // As this is a foreign key, empty values should be treated as null:
+
+        // As this column is a foreign key, empty values should be considered null.
         if (empty($value)) {
             $value = null;
         }
@@ -258,16 +274,14 @@ trait PageVersionBase
         $this->data['page_id'] = $value;
         $this->setModified('page_id');
     }
-
+    
     /**
-    * Set the value of Version / version.
-    *
-    * Must not be null.
-    * @param $value int
-    */
-    public function setVersion($value)
+     * Set the value of Version / version
+     * @param $value int
+     */
+    public function setVersion(int $value)
     {
-        $this->validateInt('Version', $value);
+
         $this->validateNotNull('Version', $value);
 
         if ($this->data['version'] === $value) {
@@ -277,15 +291,15 @@ trait PageVersionBase
         $this->data['version'] = $value;
         $this->setModified('version');
     }
-
+    
     /**
-    * Set the value of Title / title.
-    *
-    * @param $value string
-    */
+     * Set the value of Title / title
+     * @param $value string
+     */
     public function setTitle($value)
     {
-        $this->validateString('Title', $value);
+
+
 
         if ($this->data['title'] === $value) {
             return;
@@ -294,15 +308,15 @@ trait PageVersionBase
         $this->data['title'] = $value;
         $this->setModified('title');
     }
-
+    
     /**
-    * Set the value of ShortTitle / short_title.
-    *
-    * @param $value string
-    */
+     * Set the value of ShortTitle / short_title
+     * @param $value string
+     */
     public function setShortTitle($value)
     {
-        $this->validateString('ShortTitle', $value);
+
+
 
         if ($this->data['short_title'] === $value) {
             return;
@@ -311,15 +325,15 @@ trait PageVersionBase
         $this->data['short_title'] = $value;
         $this->setModified('short_title');
     }
-
+    
     /**
-    * Set the value of Description / description.
-    *
-    * @param $value string
-    */
+     * Set the value of Description / description
+     * @param $value string
+     */
     public function setDescription($value)
     {
-        $this->validateString('Description', $value);
+
+
 
         if ($this->data['description'] === $value) {
             return;
@@ -328,15 +342,15 @@ trait PageVersionBase
         $this->data['description'] = $value;
         $this->setModified('description');
     }
-
+    
     /**
-    * Set the value of MetaDescription / meta_description.
-    *
-    * @param $value string
-    */
+     * Set the value of MetaDescription / meta_description
+     * @param $value string
+     */
     public function setMetaDescription($value)
     {
-        $this->validateString('MetaDescription', $value);
+
+
 
         if ($this->data['meta_description'] === $value) {
             return;
@@ -345,20 +359,20 @@ trait PageVersionBase
         $this->data['meta_description'] = $value;
         $this->setModified('meta_description');
     }
-
+    
     /**
-    * Set the value of ContentItemId / content_item_id.
-    *
-    * @param $value string
-    */
+     * Set the value of ContentItemId / content_item_id
+     * @param $value string
+     */
     public function setContentItemId($value)
     {
-        $this->validateString('ContentItemId', $value);
 
-        // As this is a foreign key, empty values should be treated as null:
+
+        // As this column is a foreign key, empty values should be considered null.
         if (empty($value)) {
             $value = null;
         }
+
 
 
         if ($this->data['content_item_id'] === $value) {
@@ -368,20 +382,20 @@ trait PageVersionBase
         $this->data['content_item_id'] = $value;
         $this->setModified('content_item_id');
     }
-
+    
     /**
-    * Set the value of UserId / user_id.
-    *
-    * @param $value int
-    */
+     * Set the value of UserId / user_id
+     * @param $value int
+     */
     public function setUserId($value)
     {
-        $this->validateInt('UserId', $value);
 
-        // As this is a foreign key, empty values should be treated as null:
+
+        // As this column is a foreign key, empty values should be considered null.
         if (empty($value)) {
             $value = null;
         }
+
 
 
         if ($this->data['user_id'] === $value) {
@@ -391,13 +405,11 @@ trait PageVersionBase
         $this->data['user_id'] = $value;
         $this->setModified('user_id');
     }
-
+    
     /**
-    * Set the value of UpdatedDate / updated_date.
-    *
-    * Must not be null.
-    * @param $value \DateTime
-    */
+     * Set the value of UpdatedDate / updated_date
+     * @param $value DateTime
+     */
     public function setUpdatedDate($value)
     {
         $this->validateDate('UpdatedDate', $value);
@@ -410,16 +422,14 @@ trait PageVersionBase
         $this->data['updated_date'] = $value;
         $this->setModified('updated_date');
     }
-
+    
     /**
-    * Set the value of Template / template.
-    *
-    * Must not be null.
-    * @param $value string
-    */
-    public function setTemplate($value)
+     * Set the value of Template / template
+     * @param $value string
+     */
+    public function setTemplate(string $value)
     {
-        $this->validateString('Template', $value);
+
         $this->validateNotNull('Template', $value);
 
         if ($this->data['template'] === $value) {
@@ -429,20 +439,20 @@ trait PageVersionBase
         $this->data['template'] = $value;
         $this->setModified('template');
     }
-
+    
     /**
-    * Set the value of ImageId / image_id.
-    *
-    * @param $value string
-    */
+     * Set the value of ImageId / image_id
+     * @param $value string
+     */
     public function setImageId($value)
     {
-        $this->validateString('ImageId', $value);
 
-        // As this is a foreign key, empty values should be treated as null:
+
+        // As this column is a foreign key, empty values should be considered null.
         if (empty($value)) {
             $value = null;
         }
+
 
 
         if ($this->data['image_id'] === $value) {
@@ -452,33 +462,40 @@ trait PageVersionBase
         $this->data['image_id'] = $value;
         $this->setModified('image_id');
     }
+    
+    
     /**
-    * Get the ContentItem model for this PageVersion by Id.
-    *
-    * @uses \Octo\System\Store\ContentItemStore::getById()
-    * @uses \Octo\System\Model\ContentItem
-    * @return \Octo\System\Model\ContentItem
-    */
+     * Get the ContentItem model for this  by Id.
+     *
+     * @uses \Octo\System\Store\ContentItemStore::getById()
+     * @uses \Octo\System\Model\ContentItem
+     * @return \Octo\System\Model\ContentItem
+     */
     public function getContentItem()
     {
         $key = $this->getContentItemId();
 
         if (empty($key)) {
-            return null;
+           return null;
         }
 
-        return Factory::getStore('ContentItem', 'Octo\System')->getById($key);
+        return Store::get('ContentItem')->getById($key);
     }
 
     /**
-    * Set ContentItem - Accepts an ID, an array representing a ContentItem or a ContentItem model.
-    *
-    * @param $value mixed
-    */
+     * Set ContentItem - Accepts an ID, an array representing a ContentItem or a ContentItem model.
+     * @throws \Exception
+     * @param $value mixed
+     */
     public function setContentItem($value)
     {
+        // Is this a scalar value representing the ID of this foreign key?
+        if (is_scalar($value)) {
+            return $this->setContentItemId($value);
+        }
+
         // Is this an instance of ContentItem?
-        if ($value instanceof \Octo\System\Model\ContentItem) {
+        if (is_object($value) && $value instanceof \Octo\System\Model\ContentItem) {
             return $this->setContentItemObject($value);
         }
 
@@ -487,46 +504,52 @@ trait PageVersionBase
             return $this->setContentItemId($value['id']);
         }
 
-        // Is this a scalar value representing the ID of this foreign key?
-        return $this->setContentItemId($value);
+        // None of the above? That's a problem!
+        throw new \Exception('Invalid value for ContentItem.');
     }
 
     /**
-    * Set ContentItem - Accepts a ContentItem model.
-    *
-    * @param $value \Octo\System\Model\ContentItem
-    */
+     * Set ContentItem - Accepts a ContentItem model.
+     *
+     * @param $value \Octo\System\Model\ContentItem
+     */
     public function setContentItemObject(\Octo\System\Model\ContentItem $value)
     {
         return $this->setContentItemId($value->getId());
     }
+
     /**
-    * Get the Page model for this PageVersion by Id.
-    *
-    * @uses \Octo\Pages\Store\PageStore::getById()
-    * @uses \Octo\Pages\Model\Page
-    * @return \Octo\Pages\Model\Page
-    */
+     * Get the Page model for this  by Id.
+     *
+     * @uses \Octo\Pages\Store\PageStore::getById()
+     * @uses \Octo\Pages\Model\Page
+     * @return \Octo\Pages\Model\Page
+     */
     public function getPage()
     {
         $key = $this->getPageId();
 
         if (empty($key)) {
-            return null;
+           return null;
         }
 
-        return Factory::getStore('Page', 'Octo\Pages')->getById($key);
+        return Store::get('Page')->getById($key);
     }
 
     /**
-    * Set Page - Accepts an ID, an array representing a Page or a Page model.
-    *
-    * @param $value mixed
-    */
+     * Set Page - Accepts an ID, an array representing a Page or a Page model.
+     * @throws \Exception
+     * @param $value mixed
+     */
     public function setPage($value)
     {
+        // Is this a scalar value representing the ID of this foreign key?
+        if (is_scalar($value)) {
+            return $this->setPageId($value);
+        }
+
         // Is this an instance of Page?
-        if ($value instanceof \Octo\Pages\Model\Page) {
+        if (is_object($value) && $value instanceof \Octo\Pages\Model\Page) {
             return $this->setPageObject($value);
         }
 
@@ -535,46 +558,52 @@ trait PageVersionBase
             return $this->setPageId($value['id']);
         }
 
-        // Is this a scalar value representing the ID of this foreign key?
-        return $this->setPageId($value);
+        // None of the above? That's a problem!
+        throw new \Exception('Invalid value for Page.');
     }
 
     /**
-    * Set Page - Accepts a Page model.
-    *
-    * @param $value \Octo\Pages\Model\Page
-    */
+     * Set Page - Accepts a Page model.
+     *
+     * @param $value \Octo\Pages\Model\Page
+     */
     public function setPageObject(\Octo\Pages\Model\Page $value)
     {
         return $this->setPageId($value->getId());
     }
+
     /**
-    * Get the File model for this PageVersion by Id.
-    *
-    * @uses \Octo\File\Store\FileStore::getById()
-    * @uses \Octo\File\Model\File
-    * @return \Octo\File\Model\File
-    */
+     * Get the File model for this  by Id.
+     *
+     * @uses \Octo\File\Store\FileStore::getById()
+     * @uses \Octo\File\Model\File
+     * @return \Octo\File\Model\File
+     */
     public function getImage()
     {
         $key = $this->getImageId();
 
         if (empty($key)) {
-            return null;
+           return null;
         }
 
-        return Factory::getStore('File', 'Octo\File')->getById($key);
+        return Store::get('File')->getById($key);
     }
 
     /**
-    * Set Image - Accepts an ID, an array representing a File or a File model.
-    *
-    * @param $value mixed
-    */
+     * Set Image - Accepts an ID, an array representing a File or a File model.
+     * @throws \Exception
+     * @param $value mixed
+     */
     public function setImage($value)
     {
-        // Is this an instance of File?
-        if ($value instanceof \Octo\File\Model\File) {
+        // Is this a scalar value representing the ID of this foreign key?
+        if (is_scalar($value)) {
+            return $this->setImageId($value);
+        }
+
+        // Is this an instance of Image?
+        if (is_object($value) && $value instanceof \Octo\File\Model\File) {
             return $this->setImageObject($value);
         }
 
@@ -583,46 +612,52 @@ trait PageVersionBase
             return $this->setImageId($value['id']);
         }
 
-        // Is this a scalar value representing the ID of this foreign key?
-        return $this->setImageId($value);
+        // None of the above? That's a problem!
+        throw new \Exception('Invalid value for Image.');
     }
 
     /**
-    * Set Image - Accepts a File model.
-    *
-    * @param $value \Octo\File\Model\File
-    */
+     * Set Image - Accepts a File model.
+     *
+     * @param $value \Octo\File\Model\File
+     */
     public function setImageObject(\Octo\File\Model\File $value)
     {
         return $this->setImageId($value->getId());
     }
+
     /**
-    * Get the User model for this PageVersion by Id.
-    *
-    * @uses \Octo\System\Store\UserStore::getById()
-    * @uses \Octo\System\Model\User
-    * @return \Octo\System\Model\User
-    */
+     * Get the User model for this  by Id.
+     *
+     * @uses \Octo\System\Store\UserStore::getById()
+     * @uses \Octo\System\Model\User
+     * @return \Octo\System\Model\User
+     */
     public function getUser()
     {
         $key = $this->getUserId();
 
         if (empty($key)) {
-            return null;
+           return null;
         }
 
-        return Factory::getStore('User', 'Octo\System')->getById($key);
+        return Store::get('User')->getById($key);
     }
 
     /**
-    * Set User - Accepts an ID, an array representing a User or a User model.
-    *
-    * @param $value mixed
-    */
+     * Set User - Accepts an ID, an array representing a User or a User model.
+     * @throws \Exception
+     * @param $value mixed
+     */
     public function setUser($value)
     {
+        // Is this a scalar value representing the ID of this foreign key?
+        if (is_scalar($value)) {
+            return $this->setUserId($value);
+        }
+
         // Is this an instance of User?
-        if ($value instanceof \Octo\System\Model\User) {
+        if (is_object($value) && $value instanceof \Octo\System\Model\User) {
             return $this->setUserObject($value);
         }
 
@@ -631,17 +666,22 @@ trait PageVersionBase
             return $this->setUserId($value['id']);
         }
 
-        // Is this a scalar value representing the ID of this foreign key?
-        return $this->setUserId($value);
+        // None of the above? That's a problem!
+        throw new \Exception('Invalid value for User.');
     }
 
     /**
-    * Set User - Accepts a User model.
-    *
-    * @param $value \Octo\System\Model\User
-    */
+     * Set User - Accepts a User model.
+     *
+     * @param $value \Octo\System\Model\User
+     */
     public function setUserObject(\Octo\System\Model\User $value)
     {
         return $this->setUserId($value->getId());
+    }
+
+    public function Pages()
+    {
+        return Store::get('Page')->where('current_version_id', $this->data['id']);
     }
 }

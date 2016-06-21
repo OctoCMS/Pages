@@ -10,9 +10,7 @@ use Octo;
 /**
  * ContentType Store
  */
-class ContentTypeStore extends Octo\Store
+class ContentTypeStore extends Base\ContentTypeStoreBase
 {
-    use Base\ContentTypeStoreBase;
-
-    // This class has been left blank so that you can modify it - changes in this file will not be overwritten.
+	// This class has been left blank so that you can modify it - changes in this file will not be overwritten.
 }

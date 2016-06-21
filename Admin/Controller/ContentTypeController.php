@@ -74,9 +74,9 @@ class ContentTypeController extends Controller
         if ($this->request->getMethod() == 'POST') {
             $type = new ContentType();
             $type->setName($this->getParam('name'));
-            $type->setAllowedChildren(json_encode($this->getParam('allowed_children')));
-            $type->setAllowedTemplates(json_encode($this->getParam('allowed_templates')));
-            $type->setDefinition(json_encode($this->defaultDefinition));
+            $type->setAllowedChildren($this->getParam('allowed_children'));
+            $type->setAllowedTemplates($this->getParam('allowed_templates'));
+            $type->setDefinition($this->defaultDefinition);
 
             $parent = $this->getParam('parent_id', null);
 
@@ -87,7 +87,7 @@ class ContentTypeController extends Controller
             $type->setParentId($parent);
             $type->setIcon($this->getParam('icon', 'file-o'));
 
-            $type = $this->store->saveByInsert($type);
+            $type = $this->store->insert($type);
 
             $this->successMessage('Content type created: ' . $type->getName(), true);
             $this->redirect('/content-type/edit/' . $type->getId());
@@ -107,10 +107,14 @@ class ContentTypeController extends Controller
         $this->addBreadcrumb($type->getName(), '/content-type/edit');
         $form = $this->typeForm();
 
-        $values = $type->toArray(1);
+        $values = array_merge($type->toArray(), [
+            'allowed_children' => $type->getAllowedChildren(),
+            'allowed_templates' => $type->getAllowedTemplates(),
+        ]);
 
         $form->setAction($this->config->get('site.full_admin_url').'/content-type/edit/' . $typeId);
         $form->setValues($values);
+
 
         if ($this->request->getMethod() == 'POST') {
             $type->setName($this->getParam('name'));
@@ -125,7 +129,7 @@ class ContentTypeController extends Controller
             $type->setParentId($parent);
             $type->setIcon($this->getParam('icon', 'file-o'));
 
-            $this->store->saveByUpdate($type);
+            $this->store->update($type);
 
             $this->successMessage('Content type updated: ' . $type->getName(), true);
             $this->redirect('/content-type');
@@ -263,7 +267,7 @@ class ContentTypeController extends Controller
         $view = new Template('ContentType/property-editor', 'admin');
         $view->activeTab = $activeTab;
         $view->id = $typeId;
-        $view->definition = json_decode($definition, true);
+        $view->definition = $definition;
         $view->blockTypes = $blocks;
 
         return $view;
