@@ -5,6 +5,7 @@ namespace Octo\Pages\Event;
 use b8\Http\Router;
 use Octo\Event\Listener;
 use Octo\Event\Manager;
+use Octo\Pages\Query;
 use Octo\Store;
 use Octo\Template;
 use Octo\Pages\Model\Page;
@@ -16,6 +17,10 @@ class TemplateFunctions extends Listener
         $manager->registerListener('TemplateInit', function (array &$functions) {
             $functions['getPages'] = function () {
                 return call_user_func_array([$this, 'getPages'], func_get_args());
+            };
+
+            $functions['Pages'] = function () {
+                return new Query();
             };
         });
     }
