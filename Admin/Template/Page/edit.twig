@@ -53,7 +53,7 @@
 
     <script>
         {% set contentJson = pageContent|json_encode|raw %}
-        
+
         $(document).ready(function ()
         {
             PageLock.setup();
@@ -61,7 +61,7 @@
             var editor = new window.pageEditor();
             editor.id = '{{ page.id }}';
             editor.content_id = '{{ latest.content_item_id }}';
-            editor.content = {{ contentJson == '[]' ? '{}' : contentJson }};
+            editor.content = {{ contentJson == '[]' ? '{}' : contentJson|raw }};
             editor.page = {
                 title: {{ latest.title|json_encode|raw }},
             short_title: {{ latest.short_title|json_encode|raw }},
