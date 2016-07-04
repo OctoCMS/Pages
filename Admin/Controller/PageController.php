@@ -380,7 +380,7 @@ class PageController extends Controller
         if ($latest->getContentItemId()) {
             $this->template->pageContent = $latest->getContentItem()->getContent();
         } else {
-            $this->template->pageContent = '{}';
+            $this->template->pageContent = [];
         }
     }
 
