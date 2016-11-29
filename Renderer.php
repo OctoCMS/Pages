@@ -4,7 +4,6 @@ namespace Octo\Pages;
 
 use b8\Config;
 use b8\Http\Request;
-use b8\Http\Response;
 use Octo\Block;
 use Octo\Event;
 use Octo\Template;

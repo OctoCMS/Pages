@@ -3,7 +3,6 @@
 namespace Octo\Pages\Admin\Controller;
 
 use b8\Form;
-use b8\Http\Response\RedirectResponse;
 use Octo\Admin\Controller;
 use Octo\Admin\Form as FormElement;
 use Octo\Admin\Template as AdminTemplate;
@@ -85,8 +84,7 @@ class PageController extends Controller
             $parent = $this->pageStore->getHomepage();
 
             if (is_null($parent)) {
-                $this->successMessage('Create your first page using the form below.', true);
-                $this->redirect('/page/add');
+                return $this->redirect('/page/add')->success('Create your first page using the form below.');
             }
 
             $pages = [$parent];
@@ -101,7 +99,7 @@ class PageController extends Controller
             $list = AdminTemplate::getAdminTemplate('Page/list');
             $list->pages = $pages;
 
-            die($list->render());
+            return $this->raw($list->render());
         }
     }
 
@@ -115,9 +113,7 @@ class PageController extends Controller
         $this->addBreadcrumb('Add Page', '/page/add');
 
         if (is_null($type) || is_null($parentId)) {
-            $this->response = new RedirectResponse($this->response);
-            $this->response->setHeader('Location', $this->config->get('site.full_admin_url') . '/page/create-homepage');
-            return;
+            return $this->redirect('/page/create-homepage');
         }
 
         $contentType = Store::get('ContentType')->getById($type);
@@ -167,8 +163,8 @@ class PageController extends Controller
         $templateCount = count($templates);
 
         if ($templateCount == 0) {
-            $this->errorMessage('You cannot create pages until you have created at least one page template.', true);
-            $this->redirect('/');
+            return $this->redirect('/')
+                        ->error('You cannot create pages until you have created at least one page template.');
         } elseif ($templateCount == 1) {
             $field = Form\Element\Hidden::create('template', 'Template', true);
             $field->setValue($template);
@@ -275,7 +271,7 @@ class PageController extends Controller
 
         Log::create(Log::TYPE_CREATE, 'page', $version->getTitle(), $page->getId(), $uri);
 
-        $this->redirect('/page/edit/' . $page->getId());
+        return $this->redirect('/page/edit/' . $page->getId());
     }
 
     public function edit($pageId)
@@ -394,7 +390,7 @@ class PageController extends Controller
             $this->versionStore->save($latest);
         }
 
-        die('OK');
+        return $this->json('OK');
     }
 
     public function save($pageId)
@@ -429,7 +425,7 @@ class PageController extends Controller
                 $this->versionStore->save($latest);
             }
 
-            die(json_encode(['content_id' => $hash]));
+            return $this->json(['content_id' => $hash]);
         }
 
         $pageData = $this->getParam('page', null);
@@ -471,7 +467,7 @@ class PageController extends Controller
             $this->versionStore->save($latest);
         }
 
-        die('OK');
+        return $this->json('OK');
     }
 
     public function publish($pageId)
@@ -501,9 +497,6 @@ class PageController extends Controller
         $data = ['model' => $page, 'content_id' => $page->getId(), 'content' => $content];
         Event::trigger('ContentPublished', $data);
 
-        $this->successMessage($latest->getTitle() . ' has been published!', true);
-        $this->response = new \b8\Http\Response\RedirectResponse($this->response);
-
         $ancestors = $page->getAncestors();
 
         $open = [];
@@ -515,7 +508,7 @@ class PageController extends Controller
             $open[] = 'open[]=' . $ancestor->getId();
         }
 
-        $this->redirect('/page?' . implode('&amp;', $open));
+        return $this->redirect('/page?' . implode('&amp;', $open))->success($latest->getTitle() . ' has been published!');
     }
 
     public function duplicate($pageId)
@@ -551,7 +544,7 @@ class PageController extends Controller
         $newPage->generateUri();
         $newPage = $this->pageStore->update($newPage);
 
-        $this->redirect('/page/edit/' . $newPage->getId());
+        return $this->redirect('/page/edit/' . $newPage->getId());
     }
 
     public function delete($pageId)
@@ -559,18 +552,15 @@ class PageController extends Controller
         $page = $this->pageStore->getById($pageId);
 
         if (empty($page)) {
-            $this->errorMessage('Page ID '. $pageId . ' does not exist.', true);
-            $this->redirect('/page');
-            return;
+            return $this->redirect('/page')->error('Page ID '. $pageId . ' does not exist.');
         }
 
         $shortTitle = $page->getCurrentVersion()->getShortTitle();
         $this->pageStore->delete($page);
 
         Log::create(Log::TYPE_DELETE, 'page', $shortTitle, $page->getId());
-        $this->successMessage($shortTitle. ' has been deleted.', true);
 
-        $this->redirect('/page');
+        return $this->redirect('/page')->success($shortTitle. ' has been deleted.');
     }
 
     public function autocomplete($identifier = 'id')
@@ -595,7 +585,7 @@ class PageController extends Controller
             ];
         }
 
-        die(json_encode($rtn));
+        return $this->json($rtn);
     }
 
     // Get meta information about a set of pages described by Id.
@@ -612,7 +602,7 @@ class PageController extends Controller
             }
         }
 
-        die(json_encode($rtn));
+        return $this->json($rtn);
     }
 
     public function sort()
@@ -628,6 +618,6 @@ class PageController extends Controller
             }
         }
 
-        die('OK');
+        return $this->json('OK');
     }
 }

@@ -10,7 +10,6 @@ use b8\Form\Element\Select;
 use b8\Form\Element\Submit;
 use b8\Form\Element\Text;
 use b8\Form\Element\TextArea;
-use b8\Http\Response\RedirectResponse;
 use Octo\Admin\Form;
 use Octo\Admin\Menu;
 use Octo\Admin\Controller;
@@ -89,8 +88,8 @@ class ContentTypeController extends Controller
 
             $type = $this->store->insert($type);
 
-            $this->successMessage('Content type created: ' . $type->getName(), true);
-            $this->redirect('/content-type/edit/' . $type->getId());
+            return $this->redirect('/content-type/edit/' . $type->getId())
+                        ->success('Content type created: ' . $type->getName());
         }
 
         $this->view->form = $form;
@@ -131,8 +130,7 @@ class ContentTypeController extends Controller
 
             $this->store->update($type);
 
-            $this->successMessage('Content type updated: ' . $type->getName(), true);
-            $this->redirect('/content-type');
+            return $this->redirect('/content-type')->success('Content type updated: ' . $type->getName());
         }
 
         $def = $type->getDefinition();
@@ -152,8 +150,7 @@ class ContentTypeController extends Controller
 
         $this->store->delete($item);
 
-        $this->successMessage('Content type deleted.', true);
-        $this->redirect('/content-type');
+        return $this->redirect('/content-type')->success('Content type deleted.');
     }
 
 

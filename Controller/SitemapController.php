@@ -31,8 +31,8 @@ class SitemapController extends Controller
             $cache->set($key, $xml, 1800);
         }
 
-        header('Content-Type: application/xml');
-        die($xml);
+        $this->response->type('application/xml');
+        return $this->raw($xml);
     }
 
     protected function getXmlSitemap()
