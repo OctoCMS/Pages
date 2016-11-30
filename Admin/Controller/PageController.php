@@ -326,6 +326,7 @@ class PageController extends Controller
                 }
                 else {
                     $property['editable'] = true;
+                    $property['full'] = !empty($property['handler']['full']);
 
                     $edit = [
                         'id' => $key,

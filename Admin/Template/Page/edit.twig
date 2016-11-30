@@ -1,7 +1,7 @@
 {% extends "@admin/layout.twig" %}
 
 {% block content %}
-    <div class="row">
+    <div class="row page-editor">
         <div class="col-lg-12">
             <div class="nav-tabs-custom">
                 <div class="pull-right" style="margin-top: 5px; margin-right: 5px;">
@@ -38,10 +38,16 @@
                         {% if tab.properties|length > 0 %}
                             <div class="tab-pane" id="tab_{{ i }}">
                                 {% for property in tab.properties %}
-                                <div class="row block-editor">
-                                    <div class="col-lg-2"><h4>{{ property.name }}</h4></div>
-                                    <div class="col-lg-10">{{ property.editor|raw }}</div>
-                                </div>
+                                    {% if not property.full %}
+                                        <div class="row block-editor">
+                                            <div class="col-lg-2"><h4>{{ property.name }}</h4></div>
+                                            <div class="col-lg-10">{{ property.editor|raw }}</div>
+                                        </div>
+                                    {% else %}
+                                        <div class="custom-editor">
+                                            {{ property.editor|raw }}
+                                        </div>
+                                    {% endif %}
                                 {% endfor %}
                             </div>
                         {% endif %}
@@ -54,8 +60,7 @@
     <script>
         {% set contentJson = pageContent|json_encode|raw %}
 
-        $(document).ready(function ()
-        {
+        $(document).ready(function () {
             PageLock.setup();
 
             var editor = new window.pageEditor();
@@ -78,7 +83,10 @@
             CKEDITOR.on('instanceReady', function (instance) {
                 instance.editor.on('blur', function () {
                     var element = $(instance.editor.element.$);
-                    editor.triggerSaveContent(element.parents('form'));
+
+                    if (element.parents('.block-editor').length) {
+                        editor.triggerSaveContent(element.parents('form'));
+                    }
                 });
             });
 
@@ -117,6 +125,7 @@
 
             $('#page-preview').css('height', $(window).height() - ($('#page-preview').offset().top + 50));
 
+            $('.page-editor').trigger('ready.octo', {editor: editor});
         });
 
 
