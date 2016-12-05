@@ -6,6 +6,7 @@
 
 namespace Octo\Pages\Model\Base;
 
+use DateTime;
 use Octo\Model;
 use Octo\Store;
 

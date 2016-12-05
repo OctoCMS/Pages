@@ -53,6 +53,8 @@ class ContentTypeController extends Controller
 
     public function init()
     {
+        parent::init();
+        
         $this->addBreadcrumb('Content Types', '/content-type');
         $this->store = Store::get('ContentType');
         $this->types = $this->store->all();

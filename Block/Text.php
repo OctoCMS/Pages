@@ -37,7 +37,7 @@ class Text extends Block
 
         $content = TextArea::create('content', 'Content', false);
         $content->setId('block_text_content_' . $item['id']);
-        $content->setClass('ckeditor '.$type);
+        $content->setClass('html-editor '.$type);
 
         if (isset($item['content']['content'])) {
             $content->setValue($item['content']['content']);
