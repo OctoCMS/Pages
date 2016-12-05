@@ -22,7 +22,7 @@ class DashboardWidget extends Listener
         $stats[] = [
             'title' => 'Pages',
             'count' => number_format($store->getTotal()),
-            'icon' => 'ios7-copy-outline',
+            'icon' => 'file-text-o',
             'color' => 'yellow',
             'link' => '/page',
         ];
