@@ -493,11 +493,6 @@ class PageController extends Controller
         /** @var \Octo\Pages\Model\Page $page */
         $page = $this->pageStore->save($page);
 
-        $content = $latest->getContentItem()->getContent();
-
-        $data = ['model' => $page, 'content_id' => $page->getId(), 'content' => $content];
-        Event::trigger('ContentPublished', $data);
-
         $ancestors = $page->getAncestors();
 
         $open = [];

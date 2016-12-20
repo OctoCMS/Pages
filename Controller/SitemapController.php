@@ -7,13 +7,20 @@ use b8\Config;
 use Octo\Controller;
 use Octo\Pages\Model\Page;
 use Octo\Store;
+use Octo\Template;
 
 class SitemapController extends Controller
 {
 
     public function index()
     {
+        /** @var \Octo\Pages\Store\PageStore $pageStore */
+        $pageStore = Store::get('Page');
 
+        $template = new Template('include/sitemap');
+        $template->set('home', $pageStore->getHomepage());
+
+        return $template->render();
     }
 
     public function xml()

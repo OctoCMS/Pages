@@ -14,7 +14,7 @@ use Octo\Utilities\StringUtilities;
  * Page Model
  * @uses Octo\Pages\Model\Base\PageBaseBase
  */
-class Page extends Base\PageBase
+class Page extends Base\PageBase implements Octo\System\Searchable
 {
 	public function __construct($initialData = array())
     {
@@ -22,6 +22,47 @@ class Page extends Base\PageBase
         $this->getters['hasChildren'] = 'hasChildren';
         $this->getters['isLocked'] = 'getIsLocked';
         $this->getters['latestVersion'] = 'getLatestVersion';
+    }
+    
+    public function getSearchId()
+    {
+        return $this->getId();
+    }
+    
+    public function getSearchContent() : string
+    {
+        $rtn = '';
+
+        if ($this->getPublishDate() > (new \DateTime())) {
+            return $rtn;
+        }
+
+        $current = $this->getCurrentVersion();
+
+        $rtn .= $current->getTitle() . ' ';
+        $rtn .= $current->getDescription() . ' ';
+        $rtn .= $current->getMetaDescription() . ' ';
+
+        $content = $current->getContentItem()->getContent();
+
+        if (is_array($content)) {
+            foreach ($content as $item) {
+                if (is_string($item)) {
+                    $rtn .= $item . ' ';
+                    continue;
+                }
+
+                if (is_array($item)) {
+                    foreach ($item as $value) {
+                        if (is_string($value)) {
+                            $rtn .= $value . ' ';
+                        }
+                    }
+                }
+            }
+        }
+        
+        return $rtn;
     }
 
     public function __get($key)
@@ -128,12 +169,6 @@ class Page extends Base\PageBase
         }
 
         return false;
-    }
-
-    public function getIndexableContent()
-    {
-        $content = $this->getLatestVersion()->getContentItem()->getContent();
-        return $content;
     }
 
     /**
