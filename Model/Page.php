@@ -39,6 +39,10 @@ class Page extends Base\PageBase implements Octo\System\Searchable
 
         $current = $this->getCurrentVersion();
 
+        if (!$current) {
+            return $rtn;
+        }
+
         $rtn .= $current->getTitle() . ' ';
         $rtn .= $current->getDescription() . ' ';
         $rtn .= $current->getMetaDescription() . ' ';
@@ -107,6 +111,7 @@ class Page extends Base\PageBase implements Octo\System\Searchable
 
     public function hasChildren()
     {
+        /** @var Octo\Pages\Store\PageStore $store */
         $store = Store::get('Page');
         $count = $store->getChildrenCount($this);
         return $count ? true : false;
@@ -114,6 +119,7 @@ class Page extends Base\PageBase implements Octo\System\Searchable
 
     public function getChildren()
     {
+        /** @var Octo\Pages\Store\PageStore $store */
         $store = Store::get('Page');
         return $store->getByParentId($this->getId());
     }
@@ -153,6 +159,7 @@ class Page extends Base\PageBase implements Octo\System\Searchable
      */
     public function getLatestVersion()
     {
+        /** @var Octo\Pages\Store\PageStore $store */
         return Store::get('Page')->getLatestVersion($this);
     }
 
