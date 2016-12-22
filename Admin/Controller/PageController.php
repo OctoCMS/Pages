@@ -16,7 +16,7 @@ use Octo\Pages\Model\PageVersion;
 use Octo\Store;
 use Octo\System\Model\ContentItem;
 use Octo\System\Model\Log;
-use Octo\Html\Template;
+use Octo\Template;
 
 class PageController extends Controller
 {
@@ -63,44 +63,68 @@ class PageController extends Controller
     public function index()
     {
         $this->setTitle('Manage Pages');
-
         $parentId = $this->getParam('parent', null);
 
-        $types = [];
-        foreach (Store::get('ContentType')->all() as $type) {
-            $thisTypes = [];
-
-            $childTypes = $type->getAllowedChildTypes() ?: [];
-            foreach ($childTypes as $childType) {
-                $thisTypes[$childType->getId()] = ['name' => $childType->getName(), 'icon' => $childType->getIcon()];
-            }
-
-            $types[$type->getId()] = $thisTypes;
-        }
-
-        $this->view->types = $types;
-
-        if (is_null($parentId)) {
-            $parent = $this->pageStore->getHomepage();
-
-            if (is_null($parent)) {
-                return $this->redirect('/page/add')->success('Create your first page using the form below.');
-            }
-
-            $pages = [$parent];
-            $this->view->pages = $pages;
-            $this->view->open = $this->getParam('open', []);
-        } else {
+        if ($this->request->isAjax()) {
             $pages = $this->pageStore->where('parent_id', $parentId)
                 ->order('position', 'ASC')
                 ->order('publish_date', 'DESC')
                 ->get();
 
-            $list = AdminTemplate::getAdminTemplate('Page/list');
-            $list->pages = $pages;
+            $rtn = [];
 
-            return $this->raw($list->render());
+            /** @var Page $page */
+            foreach ($pages as $page) {
+                $latest = $page->getLatestVersion();
+
+                $rtn[] = [
+                    'id' => $page->getId(),
+                    'title' => $latest->getTitle(),
+                    'short_title' => $latest->getShortTitle(),
+                    'children' => $page->hasChildren(),
+                    'updated' => $latest->getUpdatedDate()->format('Y-m-d H:i:s'),
+                    'author' => $latest->getUser()->getName(),
+                    'locked' => $page->getIsLocked(),
+                    'type' => $page->getContentTypeId(),
+                    'root' => $page->getParentId() ? false : true,
+                    'icon' => $page->getContentType()->getIcon(),
+                ];
+            }
+
+            return $this->json($rtn);
         }
+
+        $allTypes = [];
+        foreach (Store::get('ContentType')->all() as $type) {
+            $allTypes[$type->getId()] = $type;
+        }
+
+        $types = [];
+        /** @var ContentType $type */
+        foreach ($allTypes as $type) {
+            $thisTypes = [];
+
+            $childTypes = $type->getAllowedChildren() ?: [];
+            foreach ($childTypes as $typeId) {
+                $thisTypes[$typeId] = [
+                    'name' => $allTypes[$typeId]->getName(),
+                    'icon' => $allTypes[$typeId]->getIcon()]
+                ;
+            }
+
+            $types[$type->getId()] = $thisTypes;
+        }
+
+        $this->template->types = $types;
+        $parent = $this->pageStore->getHomepage();
+
+        if (is_null($parent)) {
+            return $this->redirect('/page/add')->success('Create your first page using the form below.');
+        }
+
+        $pages = [$parent];
+        $this->template->pages = $pages;
+        $this->template->open = $this->getParam('open', []);
     }
 
     public function add($type = null, $parentId = null)
@@ -164,7 +188,7 @@ class PageController extends Controller
 
         if ($templateCount == 0) {
             return $this->redirect('/')
-                        ->error('You cannot create pages until you have created at least one page template.');
+                ->error('You cannot create pages until you have created at least one page template.');
         } elseif ($templateCount == 1) {
             $field = Form\Element\Hidden::create('template', 'Template', true);
             $field->setValue($template);

@@ -1,0 +1,265 @@
+{% extends "@admin/layout.twig" %}
+
+{% block content %}
+    <div class="row">
+
+        <div class="col-lg-8">
+            <div class="box box-primary">
+                <div class="box-body">
+                    <ul class="pageview">
+                        {% for page in pages %}
+                            {% set latest = page.latestVersion %}
+                            <li class="clearfix page-{{ page.id }} {{ page.hasChildren ? 'has-children' : '' }}"
+                                data-id="{{ page.id }}"
+                                data-updated="{{ latest.updated_date|date("Y-m-d H:i:s") }}"
+                                data-author="{{ latest.User.name }}"
+                                data-locked="{{ page.isLocked ? 1 : 0 }}"
+                                data-type="{{ page.content_type_id }}"
+                                data-root="{{ page.parent_id ? 0 : 1 }}"
+                                data-children="{{ page.hasChildren }}">
+
+                                {% if page.hasChildren %}
+                                    <i class="open-arrow fa fa-caret-right"></i>
+                                {% else %}
+                                    <i class="fa"></i>
+                                {% endif %}
+
+                                <i class="fa fa-{{ page.ContentType.icon }}"></i>
+                                <span>{{ latest.short_title }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="box box-success box-page-options" style="display: none">
+                <div class="box-header">
+                    <h3 class="box-title"></h3>
+                </div>
+
+                <div class="box-body page-options">
+                    <div class="alert alert-warning fade in">
+                        <i class="fa fa-info"></i>
+                        <span></span>
+                    </div>
+
+                    <a class="btn-edit btn btn-block btn-default"><i class="fa fa-pencil"></i> <span>Edit Page</span></a>
+                    <a class="btn-duplicate btn btn-block btn-default"><i class="fa fa-copy"></i> <span>Duplicate Page</span></a>
+                    <a class="btn-delete btn btn-block btn-default"><i class="fa fa-trash"></i> <span>Delete Page</span></a>
+                </div>
+            </div>
+
+            <div class="box box-primary box-create-item" style="display: none">
+                <div class="box-header">
+                    <h3 class="box-title"></h3>
+                </div>
+
+                <div class="box-body page-options create-buttons">
+                </div>
+
+            </div>
+
+        </div>
+
+        <script>
+            window.openChildren = {{ open|json_encode|raw }};
+            window.opened = 0;
+            window.allowedChildTypes = {{ types|json_encode|raw }};
+
+            $(document).ready(function () {
+                registerEvents();
+                loadChildren($('.pageview li'), openNextChild);
+            });
+
+            function openNextChild() {
+                var parent = window.openChildren[window.opened++];
+
+                if (parent) {
+                    loadChildren($('.page-' + parent), openNextChild);
+
+                }
+            }
+
+            function registerEvents()
+            {
+                $('.open-arrow').on('click', function (e) {
+                    e.stopPropagation();
+
+                    if ($(this).hasClass('fa-caret-right')) {
+                        var parent = $(this).parent();
+                        loadChildren(parent)
+                    } else {
+                        $(this).removeClass('fa-caret-down').addClass('fa-caret-right');
+                        $(this).parent().find('ul').slideUp('fast', function () { $(this).remove(); });
+                    }
+                });
+
+                $('.pageview li').off('click');
+                $('.pageview li').on('click', function (e) {
+                    e.stopPropagation();
+
+                    var page = $(this);
+                    var options = $('.box-page-options');
+                    var create = $('.box-create-item');
+                    options.hide();
+                    create.hide();
+
+                    if (page.data('locked')) {
+                        options.find('.btn').hide();
+                        options.find('.alert span').text('This page is currently locked for editing by ' + page.data('author'));
+                        options.find('.alert').show();
+                    } else {
+                        options.find('.btn').show();
+                        options.find('.alert').hide();
+                    }
+
+                    var title = $(this).find('> span').text();
+
+                    create.find('.box-title').text('Create an item under ' + title);
+                    options.find('.box-title').text(title);
+                    options.find('.btn-edit').attr('href', '{{ adminUri }}/page/edit/' + page.data('id')).find('span').text('Edit ' + title);
+
+                    if (page.data('root')) {
+                        options.find('.btn-delete').hide();
+                        options.find('.btn-duplicate').hide();
+                    } else if (page.data('children')) {
+                        options.find('.btn-delete').hide();
+                    } else {
+                        options.find('.btn-delete').show();
+                        options.find('.btn-duplicate').show();
+                        options.find('.btn-delete').attr('href', '{{ adminUri }}/page/delete/' + page.data('id')).find('span').text('Delete ' + title);
+                        options.find('.btn-duplicate').attr('href', '{{ adminUri }}/page/duplicate/' + page.data('id')).find('span').text('Duplicate ' + title);
+                    }
+
+                    options.fadeIn();
+
+                    var btns = $('.create-buttons');
+                    btns.empty();
+
+
+
+                    if (window.allowedChildTypes[page.data('type')]) {
+                        var showCreate = false;
+
+                        for (var typeId in window.allowedChildTypes[page.data('type')]) {
+                            showCreate = true;
+                            var typeName = window.allowedChildTypes[page.data('type')][typeId].name;
+                            var typeIcon = window.allowedChildTypes[page.data('type')][typeId].icon;
+
+                            var btn = $('<a class="btn btn-block btn-default btn-create"></a>');
+                            btn.html('<i class="fa fa-'+typeIcon+'"></i> '+typeName);
+                            btn.attr('href', '{{ adminUri }}/page/add/' +typeId+'/'+page.data('id'));
+                            btns.append(btn);
+
+                        }
+
+                        if (showCreate) {
+                            create.fadeIn();
+                        }
+                    }
+                });
+
+                var fixHelper = function(e, ui) {
+                    ui.children().each(function() {
+                        $(this).width($(this).width());
+                    });
+                    return ui;
+                };
+
+                $('.pageview').find('ul').each(function () {
+                    var pageList = $(this);
+
+                    pageList.sortable({
+                        axis: 'y',
+                        containment: 'parent',
+                        items: 'li',
+                        helper: fixHelper,
+                        update: function () {
+                            var position = 0;
+                            var items = {};
+
+                            pageList.find('> li').each(function () {
+                                var id = $(this).data('id');
+                                items[id] = position++;
+                            });
+
+                            savePositions(items);
+                        }
+                    });
+                });
+            }
+
+            function loadChildren($parent, cb)
+            {
+                var parentId = $parent.data('id');
+
+                $parent.find('.open-arrow')
+                    .removeClass('fa-caret-right')
+                    .removeClass('fa-caret-down')
+                    .addClass('fa-refresh').addClass('fa-spin');
+
+                var $children = $parent.find('> ul');
+
+                if (!$children.length) {
+                    $children = $('<ul></ul>').hide();
+                    $parent.append($children);
+                }
+
+
+                $.get('{{ adminUri }}/page?parent=' + parentId, function (children) {
+                    $children.empty();
+
+                    if (typeof children != 'object') {
+                        $children.append($('<div class="alert alert-danger">There was a problem loading pages. Please try again.</div>'));
+                    }
+
+                    for (var idx in children) {
+                        var child = children[idx];
+                        var $child = $('<li></li>');
+
+                        for (var pIdx in child) {
+                            $child.data(pIdx, child[pIdx]);
+                        }
+
+                        if (child.children) {
+                            $child.addClass('has-children');
+                            $child.append('<i class="open-arrow fa fa-caret-right"></i>');
+                        } else {
+                            $child.append('<i class="fa"></i>');
+                        }
+
+                        $child.append('<i class="fa fa-'+child.icon+'"></i>');
+                        $child.append('<span>' + child.short_title + '</span>');
+                        $children.append($child);
+                    }
+
+                    $children.slideDown('fast');
+                    $('.open-arrow').off('click');
+                    registerEvents();
+
+                    $parent.find('.open-arrow')
+                        .removeClass('fa-refresh')
+                        .removeClass('fa-spin')
+                        .addClass('fa-caret-down');
+
+                    if (cb) {
+                        cb();
+                    }
+                });
+            }
+
+            function savePositions(items)
+            {
+                $('.pace').removeClass('hide');
+
+                $.post(window.adminUri + '/page/sort', {positions: items}, function () {
+                    $('.pace').addClass('hide');
+                });
+            }
+
+
+        </script>
+
+{% endblock %}
