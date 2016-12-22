@@ -160,7 +160,9 @@ class Page extends Base\PageBase implements Octo\System\Searchable
     public function getLatestVersion()
     {
         /** @var Octo\Pages\Store\PageStore $store */
-        return Store::get('Page')->getLatestVersion($this);
+        $store = Store::get('Page');
+
+        return $store->getLatestVersion($this);
     }
 
     public function getIsLocked()

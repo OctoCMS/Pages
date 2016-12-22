@@ -7,13 +7,15 @@
 namespace Octo\Pages\Model\Base;
 
 use DateTime;
+use Block8\Database\Query;
 use Octo\Model;
 use Octo\Store;
+use Octo\Pages\Model\Page;
 
 /**
  * Page Base Model
  */
-class PageBase extends Model
+abstract class PageBase extends Model
 {
     protected function init()
     {
@@ -73,7 +75,7 @@ class PageBase extends Model
      * @return string
      */
 
-     public function getId()
+     public function getId() : string
      {
         $rtn = $this->data['id'];
 
@@ -85,7 +87,7 @@ class PageBase extends Model
      * @return string
      */
 
-     public function getParentId()
+     public function getParentId() : ?string
      {
         $rtn = $this->data['parent_id'];
 
@@ -97,7 +99,7 @@ class PageBase extends Model
      * @return int
      */
 
-     public function getCurrentVersionId()
+     public function getCurrentVersionId() : ?int
      {
         $rtn = $this->data['current_version_id'];
 
@@ -109,7 +111,7 @@ class PageBase extends Model
      * @return int
      */
 
-     public function getContentTypeId()
+     public function getContentTypeId() : int
      {
         $rtn = $this->data['content_type_id'];
 
@@ -121,7 +123,7 @@ class PageBase extends Model
      * @return string
      */
 
-     public function getUri()
+     public function getUri() : string
      {
         $rtn = $this->data['uri'];
 
@@ -133,7 +135,7 @@ class PageBase extends Model
      * @return int
      */
 
-     public function getPosition()
+     public function getPosition() : int
      {
         $rtn = $this->data['position'];
 
@@ -145,12 +147,12 @@ class PageBase extends Model
      * @return DateTime
      */
 
-     public function getPublishDate()
+     public function getPublishDate() : ?DateTime
      {
         $rtn = $this->data['publish_date'];
 
         if (!empty($rtn)) {
-            $rtn = new \DateTime($rtn);
+            $rtn = new DateTime($rtn);
         }
 
         return $rtn;
@@ -161,12 +163,12 @@ class PageBase extends Model
      * @return DateTime
      */
 
-     public function getExpiryDate()
+     public function getExpiryDate() : ?DateTime
      {
         $rtn = $this->data['expiry_date'];
 
         if (!empty($rtn)) {
-            $rtn = new \DateTime($rtn);
+            $rtn = new DateTime($rtn);
         }
 
         return $rtn;
@@ -176,27 +178,26 @@ class PageBase extends Model
     /**
      * Set the value of Id / id
      * @param $value string
+     * @return Page
      */
-    public function setId(string $value)
+    public function setId(string $value) : Page
     {
 
-        $this->validateNotNull('Id', $value);
-
-        if ($this->data['id'] === $value) {
-            return;
+        if ($this->data['id'] !== $value) {
+            $this->data['id'] = $value;
+            $this->setModified('id');
         }
 
-        $this->data['id'] = $value;
-        $this->setModified('id');
+        return $this;
     }
     
     /**
      * Set the value of ParentId / parent_id
      * @param $value string
+     * @return Page
      */
-    public function setParentId($value)
+    public function setParentId(?string $value) : Page
     {
-
 
         // As this column is a foreign key, empty values should be considered null.
         if (empty($value)) {
@@ -204,22 +205,21 @@ class PageBase extends Model
         }
 
 
-
-        if ($this->data['parent_id'] === $value) {
-            return;
+        if ($this->data['parent_id'] !== $value) {
+            $this->data['parent_id'] = $value;
+            $this->setModified('parent_id');
         }
 
-        $this->data['parent_id'] = $value;
-        $this->setModified('parent_id');
+        return $this;
     }
     
     /**
      * Set the value of CurrentVersionId / current_version_id
      * @param $value int
+     * @return Page
      */
-    public function setCurrentVersionId($value)
+    public function setCurrentVersionId(?int $value) : Page
     {
-
 
         // As this column is a foreign key, empty values should be considered null.
         if (empty($value)) {
@@ -227,104 +227,100 @@ class PageBase extends Model
         }
 
 
-
-        if ($this->data['current_version_id'] === $value) {
-            return;
+        if ($this->data['current_version_id'] !== $value) {
+            $this->data['current_version_id'] = $value;
+            $this->setModified('current_version_id');
         }
 
-        $this->data['current_version_id'] = $value;
-        $this->setModified('current_version_id');
+        return $this;
     }
     
     /**
      * Set the value of ContentTypeId / content_type_id
      * @param $value int
+     * @return Page
      */
-    public function setContentTypeId(int $value)
+    public function setContentTypeId(int $value) : Page
     {
-
 
         // As this column is a foreign key, empty values should be considered null.
         if (empty($value)) {
             $value = null;
         }
 
-        $this->validateNotNull('ContentTypeId', $value);
 
-        if ($this->data['content_type_id'] === $value) {
-            return;
+        if ($this->data['content_type_id'] !== $value) {
+            $this->data['content_type_id'] = $value;
+            $this->setModified('content_type_id');
         }
 
-        $this->data['content_type_id'] = $value;
-        $this->setModified('content_type_id');
+        return $this;
     }
     
     /**
      * Set the value of Uri / uri
      * @param $value string
+     * @return Page
      */
-    public function setUri(string $value)
+    public function setUri(string $value) : Page
     {
 
-        $this->validateNotNull('Uri', $value);
-
-        if ($this->data['uri'] === $value) {
-            return;
+        if ($this->data['uri'] !== $value) {
+            $this->data['uri'] = $value;
+            $this->setModified('uri');
         }
 
-        $this->data['uri'] = $value;
-        $this->setModified('uri');
+        return $this;
     }
     
     /**
      * Set the value of Position / position
      * @param $value int
+     * @return Page
      */
-    public function setPosition(int $value)
+    public function setPosition(int $value) : Page
     {
 
-        $this->validateNotNull('Position', $value);
-
-        if ($this->data['position'] === $value) {
-            return;
+        if ($this->data['position'] !== $value) {
+            $this->data['position'] = $value;
+            $this->setModified('position');
         }
 
-        $this->data['position'] = $value;
-        $this->setModified('position');
+        return $this;
     }
     
     /**
      * Set the value of PublishDate / publish_date
      * @param $value DateTime
+     * @return Page
      */
-    public function setPublishDate($value)
+    public function setPublishDate($value) : Page
     {
         $this->validateDate('PublishDate', $value);
 
-
-        if ($this->data['publish_date'] === $value) {
-            return;
+        if ($this->data['publish_date'] !== $value) {
+            $this->data['publish_date'] = $value;
+            $this->setModified('publish_date');
         }
 
-        $this->data['publish_date'] = $value;
-        $this->setModified('publish_date');
+        return $this;
     }
     
     /**
      * Set the value of ExpiryDate / expiry_date
      * @param $value DateTime
+     * @return Page
      */
-    public function setExpiryDate($value)
+    public function setExpiryDate($value) : Page
     {
         $this->validateDate('ExpiryDate', $value);
 
-
-        if ($this->data['expiry_date'] === $value) {
-            return;
+        if ($this->data['expiry_date'] !== $value) {
+            $this->data['expiry_date'] = $value;
+            $this->setModified('expiry_date');
         }
 
-        $this->data['expiry_date'] = $value;
-        $this->setModified('expiry_date');
+        return $this;
     }
     
     
@@ -490,22 +486,13 @@ class PageBase extends Model
         return $this->setContentTypeId($value->getId());
     }
 
-    public function GaTopPages()
-    {
-        return Store::get('GaTopPage')->where('page_id', $this->data['id']);
-    }
 
-    public function MenuItems()
-    {
-        return Store::get('MenuItem')->where('page_id', $this->data['id']);
-    }
-
-    public function Pages()
+    public function Pages() : Query
     {
         return Store::get('Page')->where('parent_id', $this->data['id']);
     }
 
-    public function PageVersions()
+    public function PageVersions() : Query
     {
         return Store::get('PageVersion')->where('page_id', $this->data['id']);
     }

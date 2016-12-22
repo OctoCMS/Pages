@@ -7,13 +7,15 @@
 namespace Octo\Pages\Model\Base;
 
 use DateTime;
+use Block8\Database\Query;
 use Octo\Model;
 use Octo\Store;
+use Octo\Pages\Model\PageVersion;
 
 /**
  * PageVersion Base Model
  */
-class PageVersionBase extends Model
+abstract class PageVersionBase extends Model
 {
     protected function init()
     {
@@ -92,7 +94,7 @@ class PageVersionBase extends Model
      * @return int
      */
 
-     public function getId()
+     public function getId() : int
      {
         $rtn = $this->data['id'];
 
@@ -104,7 +106,7 @@ class PageVersionBase extends Model
      * @return string
      */
 
-     public function getPageId()
+     public function getPageId() : string
      {
         $rtn = $this->data['page_id'];
 
@@ -116,7 +118,7 @@ class PageVersionBase extends Model
      * @return int
      */
 
-     public function getVersion()
+     public function getVersion() : int
      {
         $rtn = $this->data['version'];
 
@@ -128,7 +130,7 @@ class PageVersionBase extends Model
      * @return string
      */
 
-     public function getTitle()
+     public function getTitle() : ?string
      {
         $rtn = $this->data['title'];
 
@@ -140,7 +142,7 @@ class PageVersionBase extends Model
      * @return string
      */
 
-     public function getShortTitle()
+     public function getShortTitle() : ?string
      {
         $rtn = $this->data['short_title'];
 
@@ -152,7 +154,7 @@ class PageVersionBase extends Model
      * @return string
      */
 
-     public function getDescription()
+     public function getDescription() : ?string
      {
         $rtn = $this->data['description'];
 
@@ -164,7 +166,7 @@ class PageVersionBase extends Model
      * @return string
      */
 
-     public function getMetaDescription()
+     public function getMetaDescription() : ?string
      {
         $rtn = $this->data['meta_description'];
 
@@ -176,7 +178,7 @@ class PageVersionBase extends Model
      * @return string
      */
 
-     public function getContentItemId()
+     public function getContentItemId() : ?string
      {
         $rtn = $this->data['content_item_id'];
 
@@ -188,7 +190,7 @@ class PageVersionBase extends Model
      * @return int
      */
 
-     public function getUserId()
+     public function getUserId() : ?int
      {
         $rtn = $this->data['user_id'];
 
@@ -200,12 +202,12 @@ class PageVersionBase extends Model
      * @return DateTime
      */
 
-     public function getUpdatedDate()
+     public function getUpdatedDate() : DateTime
      {
         $rtn = $this->data['updated_date'];
 
         if (!empty($rtn)) {
-            $rtn = new \DateTime($rtn);
+            $rtn = new DateTime($rtn);
         }
 
         return $rtn;
@@ -216,7 +218,7 @@ class PageVersionBase extends Model
      * @return string
      */
 
-     public function getTemplate()
+     public function getTemplate() : string
      {
         $rtn = $this->data['template'];
 
@@ -228,7 +230,7 @@ class PageVersionBase extends Model
      * @return string
      */
 
-     public function getImageId()
+     public function getImageId() : ?string
      {
         $rtn = $this->data['image_id'];
 
@@ -239,135 +241,128 @@ class PageVersionBase extends Model
     /**
      * Set the value of Id / id
      * @param $value int
+     * @return PageVersion
      */
-    public function setId(int $value)
+    public function setId(int $value) : PageVersion
     {
 
-        $this->validateNotNull('Id', $value);
-
-        if ($this->data['id'] === $value) {
-            return;
+        if ($this->data['id'] !== $value) {
+            $this->data['id'] = $value;
+            $this->setModified('id');
         }
 
-        $this->data['id'] = $value;
-        $this->setModified('id');
+        return $this;
     }
     
     /**
      * Set the value of PageId / page_id
      * @param $value string
+     * @return PageVersion
      */
-    public function setPageId(string $value)
+    public function setPageId(string $value) : PageVersion
     {
-
 
         // As this column is a foreign key, empty values should be considered null.
         if (empty($value)) {
             $value = null;
         }
 
-        $this->validateNotNull('PageId', $value);
 
-        if ($this->data['page_id'] === $value) {
-            return;
+        if ($this->data['page_id'] !== $value) {
+            $this->data['page_id'] = $value;
+            $this->setModified('page_id');
         }
 
-        $this->data['page_id'] = $value;
-        $this->setModified('page_id');
+        return $this;
     }
     
     /**
      * Set the value of Version / version
      * @param $value int
+     * @return PageVersion
      */
-    public function setVersion(int $value)
+    public function setVersion(int $value) : PageVersion
     {
 
-        $this->validateNotNull('Version', $value);
-
-        if ($this->data['version'] === $value) {
-            return;
+        if ($this->data['version'] !== $value) {
+            $this->data['version'] = $value;
+            $this->setModified('version');
         }
 
-        $this->data['version'] = $value;
-        $this->setModified('version');
+        return $this;
     }
     
     /**
      * Set the value of Title / title
      * @param $value string
+     * @return PageVersion
      */
-    public function setTitle($value)
+    public function setTitle(?string $value) : PageVersion
     {
 
-
-
-        if ($this->data['title'] === $value) {
-            return;
+        if ($this->data['title'] !== $value) {
+            $this->data['title'] = $value;
+            $this->setModified('title');
         }
 
-        $this->data['title'] = $value;
-        $this->setModified('title');
+        return $this;
     }
     
     /**
      * Set the value of ShortTitle / short_title
      * @param $value string
+     * @return PageVersion
      */
-    public function setShortTitle($value)
+    public function setShortTitle(?string $value) : PageVersion
     {
 
-
-
-        if ($this->data['short_title'] === $value) {
-            return;
+        if ($this->data['short_title'] !== $value) {
+            $this->data['short_title'] = $value;
+            $this->setModified('short_title');
         }
 
-        $this->data['short_title'] = $value;
-        $this->setModified('short_title');
+        return $this;
     }
     
     /**
      * Set the value of Description / description
      * @param $value string
+     * @return PageVersion
      */
-    public function setDescription($value)
+    public function setDescription(?string $value) : PageVersion
     {
 
-
-
-        if ($this->data['description'] === $value) {
-            return;
+        if ($this->data['description'] !== $value) {
+            $this->data['description'] = $value;
+            $this->setModified('description');
         }
 
-        $this->data['description'] = $value;
-        $this->setModified('description');
+        return $this;
     }
     
     /**
      * Set the value of MetaDescription / meta_description
      * @param $value string
+     * @return PageVersion
      */
-    public function setMetaDescription($value)
+    public function setMetaDescription(?string $value) : PageVersion
     {
 
-
-
-        if ($this->data['meta_description'] === $value) {
-            return;
+        if ($this->data['meta_description'] !== $value) {
+            $this->data['meta_description'] = $value;
+            $this->setModified('meta_description');
         }
 
-        $this->data['meta_description'] = $value;
-        $this->setModified('meta_description');
+        return $this;
     }
     
     /**
      * Set the value of ContentItemId / content_item_id
      * @param $value string
+     * @return PageVersion
      */
-    public function setContentItemId($value)
+    public function setContentItemId(?string $value) : PageVersion
     {
-
 
         // As this column is a foreign key, empty values should be considered null.
         if (empty($value)) {
@@ -375,22 +370,21 @@ class PageVersionBase extends Model
         }
 
 
-
-        if ($this->data['content_item_id'] === $value) {
-            return;
+        if ($this->data['content_item_id'] !== $value) {
+            $this->data['content_item_id'] = $value;
+            $this->setModified('content_item_id');
         }
 
-        $this->data['content_item_id'] = $value;
-        $this->setModified('content_item_id');
+        return $this;
     }
     
     /**
      * Set the value of UserId / user_id
      * @param $value int
+     * @return PageVersion
      */
-    public function setUserId($value)
+    public function setUserId(?int $value) : PageVersion
     {
-
 
         // As this column is a foreign key, empty values should be considered null.
         if (empty($value)) {
@@ -398,56 +392,54 @@ class PageVersionBase extends Model
         }
 
 
-
-        if ($this->data['user_id'] === $value) {
-            return;
+        if ($this->data['user_id'] !== $value) {
+            $this->data['user_id'] = $value;
+            $this->setModified('user_id');
         }
 
-        $this->data['user_id'] = $value;
-        $this->setModified('user_id');
+        return $this;
     }
     
     /**
      * Set the value of UpdatedDate / updated_date
      * @param $value DateTime
+     * @return PageVersion
      */
-    public function setUpdatedDate($value)
+    public function setUpdatedDate($value) : PageVersion
     {
         $this->validateDate('UpdatedDate', $value);
-        $this->validateNotNull('UpdatedDate', $value);
 
-        if ($this->data['updated_date'] === $value) {
-            return;
+        if ($this->data['updated_date'] !== $value) {
+            $this->data['updated_date'] = $value;
+            $this->setModified('updated_date');
         }
 
-        $this->data['updated_date'] = $value;
-        $this->setModified('updated_date');
+        return $this;
     }
     
     /**
      * Set the value of Template / template
      * @param $value string
+     * @return PageVersion
      */
-    public function setTemplate(string $value)
+    public function setTemplate(string $value) : PageVersion
     {
 
-        $this->validateNotNull('Template', $value);
-
-        if ($this->data['template'] === $value) {
-            return;
+        if ($this->data['template'] !== $value) {
+            $this->data['template'] = $value;
+            $this->setModified('template');
         }
 
-        $this->data['template'] = $value;
-        $this->setModified('template');
+        return $this;
     }
     
     /**
      * Set the value of ImageId / image_id
      * @param $value string
+     * @return PageVersion
      */
-    public function setImageId($value)
+    public function setImageId(?string $value) : PageVersion
     {
-
 
         // As this column is a foreign key, empty values should be considered null.
         if (empty($value)) {
@@ -455,13 +447,12 @@ class PageVersionBase extends Model
         }
 
 
-
-        if ($this->data['image_id'] === $value) {
-            return;
+        if ($this->data['image_id'] !== $value) {
+            $this->data['image_id'] = $value;
+            $this->setModified('image_id');
         }
 
-        $this->data['image_id'] = $value;
-        $this->setModified('image_id');
+        return $this;
     }
     
     
@@ -681,7 +672,8 @@ class PageVersionBase extends Model
         return $this->setUserId($value->getId());
     }
 
-    public function Pages()
+
+    public function Pages() : Query
     {
         return Store::get('Page')->where('current_version_id', $this->data['id']);
     }
