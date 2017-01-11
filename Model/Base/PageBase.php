@@ -11,65 +11,95 @@ use Block8\Database\Query;
 use Octo\Model;
 use Octo\Store;
 use Octo\Pages\Model\Page;
+use Octo\Pages\Store\PageStore;
 
 /**
  * Page Base Model
  */
 abstract class PageBase extends Model
 {
-    protected function init()
-    {
-        $this->table = 'page';
-        $this->model = 'Page';
+    protected $table = 'page';
+    protected $model = 'Page';
+    protected $data = [
+        'id' => null,
+        'parent_id' => null,
+        'current_version_id' => null,
+        'content_type_id' => 1,
+        'uri' => '',
+        'position' => 0,
+        'publish_date' => null,
+        'expiry_date' => null,
+    ];
 
-        // Columns:
-        
-        $this->data['id'] = null;
-        $this->getters['id'] = 'getId';
-        $this->setters['id'] = 'setId';
-        
-        $this->data['parent_id'] = null;
-        $this->getters['parent_id'] = 'getParentId';
-        $this->setters['parent_id'] = 'setParentId';
-        
-        $this->data['current_version_id'] = null;
-        $this->getters['current_version_id'] = 'getCurrentVersionId';
-        $this->setters['current_version_id'] = 'setCurrentVersionId';
-        
-        $this->data['content_type_id'] = null;
-        $this->getters['content_type_id'] = 'getContentTypeId';
-        $this->setters['content_type_id'] = 'setContentTypeId';
-        
-        $this->data['uri'] = null;
-        $this->getters['uri'] = 'getUri';
-        $this->setters['uri'] = 'setUri';
-        
-        $this->data['position'] = null;
-        $this->getters['position'] = 'getPosition';
-        $this->setters['position'] = 'setPosition';
-        
-        $this->data['publish_date'] = null;
-        $this->getters['publish_date'] = 'getPublishDate';
-        $this->setters['publish_date'] = 'setPublishDate';
-        
-        $this->data['expiry_date'] = null;
-        $this->getters['expiry_date'] = 'getExpiryDate';
-        $this->setters['expiry_date'] = 'setExpiryDate';
-        
-        // Foreign keys:
-        
-        $this->getters['CurrentVersion'] = 'getCurrentVersion';
-        $this->setters['CurrentVersion'] = 'setCurrentVersion';
-        
-        $this->getters['Parent'] = 'getParent';
-        $this->setters['Parent'] = 'setParent';
-        
-        $this->getters['ContentType'] = 'getContentType';
-        $this->setters['ContentType'] = 'setContentType';
-        
+    protected $getters = [
+        'id' => 'getId',
+        'parent_id' => 'getParentId',
+        'current_version_id' => 'getCurrentVersionId',
+        'content_type_id' => 'getContentTypeId',
+        'uri' => 'getUri',
+        'position' => 'getPosition',
+        'publish_date' => 'getPublishDate',
+        'expiry_date' => 'getExpiryDate',
+        'CurrentVersion' => 'getCurrentVersion',
+        'Parent' => 'getParent',
+        'ContentType' => 'getContentType',
+    ];
+
+    protected $setters = [
+        'id' => 'setId',
+        'parent_id' => 'setParentId',
+        'current_version_id' => 'setCurrentVersionId',
+        'content_type_id' => 'setContentTypeId',
+        'uri' => 'setUri',
+        'position' => 'setPosition',
+        'publish_date' => 'setPublishDate',
+        'expiry_date' => 'setExpiryDate',
+        'CurrentVersion' => 'setCurrentVersion',
+        'Parent' => 'setParent',
+        'ContentType' => 'setContentType',
+    ];
+
+    /**
+     * Return the database store for this model.
+     * @return PageStore
+     */
+    public static function Store() : PageStore
+    {
+        return PageStore::load();
     }
 
-    
+    /**
+     * Get Page by primary key: id
+     * @param string $id
+     * @return Page|null
+     */
+    public static function get(string $id) : ?Page
+    {
+        return self::Store()->getById($id);
+    }
+
+    /**
+     * @throws \Exception
+     * @return Page
+     */
+    public function save() : Page
+    {
+        $rtn = self::Store()->save($this);
+
+        if (empty($rtn)) {
+            throw new \Exception('Failed to save Page');
+        }
+
+        if (!($rtn instanceof Page)) {
+            throw new \Exception('Unexpected ' . get_class($rtn) . ' received from save.');
+        }
+
+        $this->data = $rtn->toArray();
+
+        return $this;
+    }
+
+
     /**
      * Get the value of Id / id
      * @return string

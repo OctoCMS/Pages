@@ -11,55 +11,88 @@ use Block8\Database\Query;
 use Octo\Model;
 use Octo\Store;
 use Octo\Pages\Model\ContentType;
+use Octo\Pages\Store\ContentTypeStore;
 
 /**
  * ContentType Base Model
  */
 abstract class ContentTypeBase extends Model
 {
-    protected function init()
-    {
-        $this->table = 'content_type';
-        $this->model = 'ContentType';
+    protected $table = 'content_type';
+    protected $model = 'ContentType';
+    protected $data = [
+        'id' => null,
+        'name' => 'Content',
+        'parent_id' => null,
+        'allowed_children' => null,
+        'definition' => null,
+        'icon' => null,
+        'allowed_templates' => null,
+    ];
 
-        // Columns:
-        
-        $this->data['id'] = null;
-        $this->getters['id'] = 'getId';
-        $this->setters['id'] = 'setId';
-        
-        $this->data['name'] = null;
-        $this->getters['name'] = 'getName';
-        $this->setters['name'] = 'setName';
-        
-        $this->data['parent_id'] = null;
-        $this->getters['parent_id'] = 'getParentId';
-        $this->setters['parent_id'] = 'setParentId';
-        
-        $this->data['allowed_children'] = null;
-        $this->getters['allowed_children'] = 'getAllowedChildren';
-        $this->setters['allowed_children'] = 'setAllowedChildren';
-        
-        $this->data['definition'] = null;
-        $this->getters['definition'] = 'getDefinition';
-        $this->setters['definition'] = 'setDefinition';
-        
-        $this->data['icon'] = null;
-        $this->getters['icon'] = 'getIcon';
-        $this->setters['icon'] = 'setIcon';
-        
-        $this->data['allowed_templates'] = null;
-        $this->getters['allowed_templates'] = 'getAllowedTemplates';
-        $this->setters['allowed_templates'] = 'setAllowedTemplates';
-        
-        // Foreign keys:
-        
-        $this->getters['Parent'] = 'getParent';
-        $this->setters['Parent'] = 'setParent';
-        
+    protected $getters = [
+        'id' => 'getId',
+        'name' => 'getName',
+        'parent_id' => 'getParentId',
+        'allowed_children' => 'getAllowedChildren',
+        'definition' => 'getDefinition',
+        'icon' => 'getIcon',
+        'allowed_templates' => 'getAllowedTemplates',
+        'Parent' => 'getParent',
+    ];
+
+    protected $setters = [
+        'id' => 'setId',
+        'name' => 'setName',
+        'parent_id' => 'setParentId',
+        'allowed_children' => 'setAllowedChildren',
+        'definition' => 'setDefinition',
+        'icon' => 'setIcon',
+        'allowed_templates' => 'setAllowedTemplates',
+        'Parent' => 'setParent',
+    ];
+
+    /**
+     * Return the database store for this model.
+     * @return ContentTypeStore
+     */
+    public static function Store() : ContentTypeStore
+    {
+        return ContentTypeStore::load();
     }
 
-    
+    /**
+     * Get ContentType by primary key: id
+     * @param int $id
+     * @return ContentType|null
+     */
+    public static function get(int $id) : ?ContentType
+    {
+        return self::Store()->getById($id);
+    }
+
+    /**
+     * @throws \Exception
+     * @return ContentType
+     */
+    public function save() : ContentType
+    {
+        $rtn = self::Store()->save($this);
+
+        if (empty($rtn)) {
+            throw new \Exception('Failed to save ContentType');
+        }
+
+        if (!($rtn instanceof ContentType)) {
+            throw new \Exception('Unexpected ' . get_class($rtn) . ' received from save.');
+        }
+
+        $this->data = $rtn->toArray();
+
+        return $this;
+    }
+
+
     /**
      * Get the value of Id / id
      * @return int

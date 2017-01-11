@@ -7,18 +7,41 @@
 
 namespace Octo\Pages\Store\Base;
 
+use Block8\Database\Connection;
 use Octo\Store;
 use Octo\Pages\Model\ContentType;
 use Octo\Pages\Model\ContentTypeCollection;
+use Octo\Pages\Store\ContentTypeStore;
 
 /**
  * ContentType Base Store
  */
 class ContentTypeStoreBase extends Store
 {
+    /** @var ContentTypeStore $instance */
+    protected static $instance = null;
+
+    /** @var string */
     protected $table = 'content_type';
+
+    /** @var string */
     protected $model = 'Octo\Pages\Model\ContentType';
+
+    /** @var string */
     protected $key = 'id';
+
+    /**
+     * Return the database store for this model.
+     * @return ContentTypeStore
+     */
+    public static function load() : ContentTypeStore
+    {
+        if (is_null(self::$instance)) {
+            self::$instance = new ContentTypeStore(Connection::get());
+        }
+
+        return self::$instance;
+    }
 
     /**
     * @param $value

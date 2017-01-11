@@ -11,84 +11,109 @@ use Block8\Database\Query;
 use Octo\Model;
 use Octo\Store;
 use Octo\Pages\Model\PageVersion;
+use Octo\Pages\Store\PageVersionStore;
 
 /**
  * PageVersion Base Model
  */
 abstract class PageVersionBase extends Model
 {
-    protected function init()
-    {
-        $this->table = 'page_version';
-        $this->model = 'PageVersion';
+    protected $table = 'page_version';
+    protected $model = 'PageVersion';
+    protected $data = [
+        'id' => null,
+        'page_id' => null,
+        'version' => null,
+        'title' => null,
+        'short_title' => null,
+        'description' => null,
+        'meta_description' => null,
+        'content_item_id' => null,
+        'user_id' => null,
+        'updated_date' => null,
+        'template' => null,
+        'image_id' => null,
+    ];
 
-        // Columns:
-        
-        $this->data['id'] = null;
-        $this->getters['id'] = 'getId';
-        $this->setters['id'] = 'setId';
-        
-        $this->data['page_id'] = null;
-        $this->getters['page_id'] = 'getPageId';
-        $this->setters['page_id'] = 'setPageId';
-        
-        $this->data['version'] = null;
-        $this->getters['version'] = 'getVersion';
-        $this->setters['version'] = 'setVersion';
-        
-        $this->data['title'] = null;
-        $this->getters['title'] = 'getTitle';
-        $this->setters['title'] = 'setTitle';
-        
-        $this->data['short_title'] = null;
-        $this->getters['short_title'] = 'getShortTitle';
-        $this->setters['short_title'] = 'setShortTitle';
-        
-        $this->data['description'] = null;
-        $this->getters['description'] = 'getDescription';
-        $this->setters['description'] = 'setDescription';
-        
-        $this->data['meta_description'] = null;
-        $this->getters['meta_description'] = 'getMetaDescription';
-        $this->setters['meta_description'] = 'setMetaDescription';
-        
-        $this->data['content_item_id'] = null;
-        $this->getters['content_item_id'] = 'getContentItemId';
-        $this->setters['content_item_id'] = 'setContentItemId';
-        
-        $this->data['user_id'] = null;
-        $this->getters['user_id'] = 'getUserId';
-        $this->setters['user_id'] = 'setUserId';
-        
-        $this->data['updated_date'] = null;
-        $this->getters['updated_date'] = 'getUpdatedDate';
-        $this->setters['updated_date'] = 'setUpdatedDate';
-        
-        $this->data['template'] = null;
-        $this->getters['template'] = 'getTemplate';
-        $this->setters['template'] = 'setTemplate';
-        
-        $this->data['image_id'] = null;
-        $this->getters['image_id'] = 'getImageId';
-        $this->setters['image_id'] = 'setImageId';
-        
-        // Foreign keys:
-        
-        $this->getters['ContentItem'] = 'getContentItem';
-        $this->setters['ContentItem'] = 'setContentItem';
-        
-        $this->getters['Page'] = 'getPage';
-        $this->setters['Page'] = 'setPage';
-        
-        $this->getters['Image'] = 'getImage';
-        $this->setters['Image'] = 'setImage';
-        
-        $this->getters['User'] = 'getUser';
-        $this->setters['User'] = 'setUser';
-        
+    protected $getters = [
+        'id' => 'getId',
+        'page_id' => 'getPageId',
+        'version' => 'getVersion',
+        'title' => 'getTitle',
+        'short_title' => 'getShortTitle',
+        'description' => 'getDescription',
+        'meta_description' => 'getMetaDescription',
+        'content_item_id' => 'getContentItemId',
+        'user_id' => 'getUserId',
+        'updated_date' => 'getUpdatedDate',
+        'template' => 'getTemplate',
+        'image_id' => 'getImageId',
+        'ContentItem' => 'getContentItem',
+        'Page' => 'getPage',
+        'Image' => 'getImage',
+        'User' => 'getUser',
+    ];
+
+    protected $setters = [
+        'id' => 'setId',
+        'page_id' => 'setPageId',
+        'version' => 'setVersion',
+        'title' => 'setTitle',
+        'short_title' => 'setShortTitle',
+        'description' => 'setDescription',
+        'meta_description' => 'setMetaDescription',
+        'content_item_id' => 'setContentItemId',
+        'user_id' => 'setUserId',
+        'updated_date' => 'setUpdatedDate',
+        'template' => 'setTemplate',
+        'image_id' => 'setImageId',
+        'ContentItem' => 'setContentItem',
+        'Page' => 'setPage',
+        'Image' => 'setImage',
+        'User' => 'setUser',
+    ];
+
+    /**
+     * Return the database store for this model.
+     * @return PageVersionStore
+     */
+    public static function Store() : PageVersionStore
+    {
+        return PageVersionStore::load();
     }
 
-    
+    /**
+     * Get PageVersion by primary key: id
+     * @param int $id
+     * @return PageVersion|null
+     */
+    public static function get(int $id) : ?PageVersion
+    {
+        return self::Store()->getById($id);
+    }
+
+    /**
+     * @throws \Exception
+     * @return PageVersion
+     */
+    public function save() : PageVersion
+    {
+        $rtn = self::Store()->save($this);
+
+        if (empty($rtn)) {
+            throw new \Exception('Failed to save PageVersion');
+        }
+
+        if (!($rtn instanceof PageVersion)) {
+            throw new \Exception('Unexpected ' . get_class($rtn) . ' received from save.');
+        }
+
+        $this->data = $rtn->toArray();
+
+        return $this;
+    }
+
+
     /**
      * Get the value of Id / id
      * @return int

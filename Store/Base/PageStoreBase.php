@@ -7,18 +7,41 @@
 
 namespace Octo\Pages\Store\Base;
 
+use Block8\Database\Connection;
 use Octo\Store;
 use Octo\Pages\Model\Page;
 use Octo\Pages\Model\PageCollection;
+use Octo\Pages\Store\PageStore;
 
 /**
  * Page Base Store
  */
 class PageStoreBase extends Store
 {
+    /** @var PageStore $instance */
+    protected static $instance = null;
+
+    /** @var string */
     protected $table = 'page';
+
+    /** @var string */
     protected $model = 'Octo\Pages\Model\Page';
+
+    /** @var string */
     protected $key = 'id';
+
+    /**
+     * Return the database store for this model.
+     * @return PageStore
+     */
+    public static function load() : PageStore
+    {
+        if (is_null(self::$instance)) {
+            self::$instance = new PageStore(Connection::get());
+        }
+
+        return self::$instance;
+    }
 
     /**
     * @param $value

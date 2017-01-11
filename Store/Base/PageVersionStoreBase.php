@@ -7,18 +7,41 @@
 
 namespace Octo\Pages\Store\Base;
 
+use Block8\Database\Connection;
 use Octo\Store;
 use Octo\Pages\Model\PageVersion;
 use Octo\Pages\Model\PageVersionCollection;
+use Octo\Pages\Store\PageVersionStore;
 
 /**
  * PageVersion Base Store
  */
 class PageVersionStoreBase extends Store
 {
+    /** @var PageVersionStore $instance */
+    protected static $instance = null;
+
+    /** @var string */
     protected $table = 'page_version';
+
+    /** @var string */
     protected $model = 'Octo\Pages\Model\PageVersion';
+
+    /** @var string */
     protected $key = 'id';
+
+    /**
+     * Return the database store for this model.
+     * @return PageVersionStore
+     */
+    public static function load() : PageVersionStore
+    {
+        if (is_null(self::$instance)) {
+            self::$instance = new PageVersionStore(Connection::get());
+        }
+
+        return self::$instance;
+    }
 
     /**
     * @param $value
