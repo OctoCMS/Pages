@@ -47,7 +47,13 @@ class Page extends Base\PageBase implements Octo\System\Searchable
         $rtn .= $current->getDescription() . ' ';
         $rtn .= $current->getMetaDescription() . ' ';
 
-        $content = $current->getContentItem()->getContent();
+        $contentItem = $current->getContentItem();
+
+        if (empty($contentItem)) {
+            return $rtn;
+        }
+
+        $content = $contentItem->getContent();
 
         if (is_array($content)) {
             foreach ($content as $item) {
