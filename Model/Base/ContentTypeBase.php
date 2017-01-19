@@ -10,8 +10,9 @@ use DateTime;
 use Block8\Database\Query;
 use Octo\Model;
 use Octo\Store;
-use Octo\Pages\Model\ContentType;
+
 use Octo\Pages\Store\ContentTypeStore;
+use Octo\Pages\Model\ContentType;
 
 /**
  * ContentType Base Model
@@ -97,7 +98,6 @@ abstract class ContentTypeBase extends Model
      * Get the value of Id / id
      * @return int
      */
-
      public function getId() : int
      {
         $rtn = $this->data['id'];
@@ -109,7 +109,6 @@ abstract class ContentTypeBase extends Model
      * Get the value of Name / name
      * @return string
      */
-
      public function getName() : string
      {
         $rtn = $this->data['name'];
@@ -121,7 +120,6 @@ abstract class ContentTypeBase extends Model
      * Get the value of ParentId / parent_id
      * @return int
      */
-
      public function getParentId() : ?int
      {
         $rtn = $this->data['parent_id'];
@@ -133,7 +131,6 @@ abstract class ContentTypeBase extends Model
      * Get the value of AllowedChildren / allowed_children
      * @return array
      */
-
      public function getAllowedChildren() : ?array
      {
         $rtn = $this->data['allowed_children'];
@@ -151,7 +148,6 @@ abstract class ContentTypeBase extends Model
      * Get the value of Definition / definition
      * @return array
      */
-
      public function getDefinition() : ?array
      {
         $rtn = $this->data['definition'];
@@ -169,7 +165,6 @@ abstract class ContentTypeBase extends Model
      * Get the value of Icon / icon
      * @return string
      */
-
      public function getIcon() : ?string
      {
         $rtn = $this->data['icon'];
@@ -181,7 +176,6 @@ abstract class ContentTypeBase extends Model
      * Get the value of AllowedTemplates / allowed_templates
      * @return array
      */
-
      public function getAllowedTemplates() : ?array
      {
         $rtn = $this->data['allowed_templates'];
@@ -317,15 +311,15 @@ abstract class ContentTypeBase extends Model
         return $this;
     }
     
-    
+
     /**
      * Get the ContentType model for this  by Id.
      *
      * @uses \Octo\Pages\Store\ContentTypeStore::getById()
-     * @uses \Octo\Pages\Model\ContentType
-     * @return \Octo\Pages\Model\ContentType
+     * @uses ContentType
+     * @return ContentType|null
      */
-    public function getParent()
+    public function getParent() : ?ContentType
     {
         $key = $this->getParentId();
 
@@ -333,15 +327,16 @@ abstract class ContentTypeBase extends Model
            return null;
         }
 
-        return Store::get('ContentType')->getById($key);
+        return ContentType::Store()->getById($key);
     }
 
     /**
      * Set Parent - Accepts an ID, an array representing a ContentType or a ContentType model.
      * @throws \Exception
      * @param $value mixed
+     * @return ContentType
      */
-    public function setParent($value)
+    public function setParent($value) : ContentType
     {
         // Is this a scalar value representing the ID of this foreign key?
         if (is_scalar($value)) {
@@ -349,7 +344,7 @@ abstract class ContentTypeBase extends Model
         }
 
         // Is this an instance of Parent?
-        if (is_object($value) && $value instanceof \Octo\Pages\Model\ContentType) {
+        if (is_object($value) && $value instanceof ContentType) {
             return $this->setParentObject($value);
         }
 
@@ -365,21 +360,11 @@ abstract class ContentTypeBase extends Model
     /**
      * Set Parent - Accepts a ContentType model.
      *
-     * @param $value \Octo\Pages\Model\ContentType
+     * @param $value ContentType
+     * @return ContentType
      */
-    public function setParentObject(\Octo\Pages\Model\ContentType $value)
+    public function setParentObject(ContentType $value) : ContentType
     {
         return $this->setParentId($value->getId());
-    }
-
-
-    public function ContentTypes() : Query
-    {
-        return Store::get('ContentType')->where('parent_id', $this->data['id']);
-    }
-
-    public function Pages() : Query
-    {
-        return Store::get('Page')->where('content_type_id', $this->data['id']);
     }
 }

@@ -10,8 +10,13 @@ use DateTime;
 use Block8\Database\Query;
 use Octo\Model;
 use Octo\Store;
-use Octo\Pages\Model\PageVersion;
+
 use Octo\Pages\Store\PageVersionStore;
+use Octo\Pages\Model\PageVersion;
+use Octo\System\Model\ContentItem;
+use Octo\Pages\Model\Page;
+use Octo\File\Model\File;
+use Octo\System\Model\User;
 
 /**
  * PageVersion Base Model
@@ -118,7 +123,6 @@ abstract class PageVersionBase extends Model
      * Get the value of Id / id
      * @return int
      */
-
      public function getId() : int
      {
         $rtn = $this->data['id'];
@@ -130,7 +134,6 @@ abstract class PageVersionBase extends Model
      * Get the value of PageId / page_id
      * @return string
      */
-
      public function getPageId() : string
      {
         $rtn = $this->data['page_id'];
@@ -142,7 +145,6 @@ abstract class PageVersionBase extends Model
      * Get the value of Version / version
      * @return int
      */
-
      public function getVersion() : int
      {
         $rtn = $this->data['version'];
@@ -154,7 +156,6 @@ abstract class PageVersionBase extends Model
      * Get the value of Title / title
      * @return string
      */
-
      public function getTitle() : ?string
      {
         $rtn = $this->data['title'];
@@ -166,7 +167,6 @@ abstract class PageVersionBase extends Model
      * Get the value of ShortTitle / short_title
      * @return string
      */
-
      public function getShortTitle() : ?string
      {
         $rtn = $this->data['short_title'];
@@ -178,7 +178,6 @@ abstract class PageVersionBase extends Model
      * Get the value of Description / description
      * @return string
      */
-
      public function getDescription() : ?string
      {
         $rtn = $this->data['description'];
@@ -190,7 +189,6 @@ abstract class PageVersionBase extends Model
      * Get the value of MetaDescription / meta_description
      * @return string
      */
-
      public function getMetaDescription() : ?string
      {
         $rtn = $this->data['meta_description'];
@@ -202,7 +200,6 @@ abstract class PageVersionBase extends Model
      * Get the value of ContentItemId / content_item_id
      * @return string
      */
-
      public function getContentItemId() : ?string
      {
         $rtn = $this->data['content_item_id'];
@@ -214,7 +211,6 @@ abstract class PageVersionBase extends Model
      * Get the value of UserId / user_id
      * @return int
      */
-
      public function getUserId() : ?int
      {
         $rtn = $this->data['user_id'];
@@ -226,7 +222,6 @@ abstract class PageVersionBase extends Model
      * Get the value of UpdatedDate / updated_date
      * @return DateTime
      */
-
      public function getUpdatedDate() : DateTime
      {
         $rtn = $this->data['updated_date'];
@@ -242,7 +237,6 @@ abstract class PageVersionBase extends Model
      * Get the value of Template / template
      * @return string
      */
-
      public function getTemplate() : string
      {
         $rtn = $this->data['template'];
@@ -254,7 +248,6 @@ abstract class PageVersionBase extends Model
      * Get the value of ImageId / image_id
      * @return string
      */
-
      public function getImageId() : ?string
      {
         $rtn = $this->data['image_id'];
@@ -480,15 +473,15 @@ abstract class PageVersionBase extends Model
         return $this;
     }
     
-    
+
     /**
      * Get the ContentItem model for this  by Id.
      *
      * @uses \Octo\System\Store\ContentItemStore::getById()
-     * @uses \Octo\System\Model\ContentItem
-     * @return \Octo\System\Model\ContentItem
+     * @uses ContentItem
+     * @return ContentItem|null
      */
-    public function getContentItem()
+    public function getContentItem() : ?ContentItem
     {
         $key = $this->getContentItemId();
 
@@ -496,15 +489,16 @@ abstract class PageVersionBase extends Model
            return null;
         }
 
-        return Store::get('ContentItem')->getById($key);
+        return ContentItem::Store()->getById($key);
     }
 
     /**
      * Set ContentItem - Accepts an ID, an array representing a ContentItem or a ContentItem model.
      * @throws \Exception
      * @param $value mixed
+     * @return PageVersion
      */
-    public function setContentItem($value)
+    public function setContentItem($value) : PageVersion
     {
         // Is this a scalar value representing the ID of this foreign key?
         if (is_scalar($value)) {
@@ -512,7 +506,7 @@ abstract class PageVersionBase extends Model
         }
 
         // Is this an instance of ContentItem?
-        if (is_object($value) && $value instanceof \Octo\System\Model\ContentItem) {
+        if (is_object($value) && $value instanceof ContentItem) {
             return $this->setContentItemObject($value);
         }
 
@@ -528,9 +522,10 @@ abstract class PageVersionBase extends Model
     /**
      * Set ContentItem - Accepts a ContentItem model.
      *
-     * @param $value \Octo\System\Model\ContentItem
+     * @param $value ContentItem
+     * @return PageVersion
      */
-    public function setContentItemObject(\Octo\System\Model\ContentItem $value)
+    public function setContentItemObject(ContentItem $value) : PageVersion
     {
         return $this->setContentItemId($value->getId());
     }
@@ -539,10 +534,10 @@ abstract class PageVersionBase extends Model
      * Get the Page model for this  by Id.
      *
      * @uses \Octo\Pages\Store\PageStore::getById()
-     * @uses \Octo\Pages\Model\Page
-     * @return \Octo\Pages\Model\Page
+     * @uses Page
+     * @return Page|null
      */
-    public function getPage()
+    public function getPage() : ?Page
     {
         $key = $this->getPageId();
 
@@ -550,15 +545,16 @@ abstract class PageVersionBase extends Model
            return null;
         }
 
-        return Store::get('Page')->getById($key);
+        return Page::Store()->getById($key);
     }
 
     /**
      * Set Page - Accepts an ID, an array representing a Page or a Page model.
      * @throws \Exception
      * @param $value mixed
+     * @return PageVersion
      */
-    public function setPage($value)
+    public function setPage($value) : PageVersion
     {
         // Is this a scalar value representing the ID of this foreign key?
         if (is_scalar($value)) {
@@ -566,7 +562,7 @@ abstract class PageVersionBase extends Model
         }
 
         // Is this an instance of Page?
-        if (is_object($value) && $value instanceof \Octo\Pages\Model\Page) {
+        if (is_object($value) && $value instanceof Page) {
             return $this->setPageObject($value);
         }
 
@@ -582,9 +578,10 @@ abstract class PageVersionBase extends Model
     /**
      * Set Page - Accepts a Page model.
      *
-     * @param $value \Octo\Pages\Model\Page
+     * @param $value Page
+     * @return PageVersion
      */
-    public function setPageObject(\Octo\Pages\Model\Page $value)
+    public function setPageObject(Page $value) : PageVersion
     {
         return $this->setPageId($value->getId());
     }
@@ -593,10 +590,10 @@ abstract class PageVersionBase extends Model
      * Get the File model for this  by Id.
      *
      * @uses \Octo\File\Store\FileStore::getById()
-     * @uses \Octo\File\Model\File
-     * @return \Octo\File\Model\File
+     * @uses File
+     * @return File|null
      */
-    public function getImage()
+    public function getImage() : ?File
     {
         $key = $this->getImageId();
 
@@ -604,15 +601,16 @@ abstract class PageVersionBase extends Model
            return null;
         }
 
-        return Store::get('File')->getById($key);
+        return File::Store()->getById($key);
     }
 
     /**
      * Set Image - Accepts an ID, an array representing a File or a File model.
      * @throws \Exception
      * @param $value mixed
+     * @return PageVersion
      */
-    public function setImage($value)
+    public function setImage($value) : PageVersion
     {
         // Is this a scalar value representing the ID of this foreign key?
         if (is_scalar($value)) {
@@ -620,7 +618,7 @@ abstract class PageVersionBase extends Model
         }
 
         // Is this an instance of Image?
-        if (is_object($value) && $value instanceof \Octo\File\Model\File) {
+        if (is_object($value) && $value instanceof File) {
             return $this->setImageObject($value);
         }
 
@@ -636,9 +634,10 @@ abstract class PageVersionBase extends Model
     /**
      * Set Image - Accepts a File model.
      *
-     * @param $value \Octo\File\Model\File
+     * @param $value File
+     * @return PageVersion
      */
-    public function setImageObject(\Octo\File\Model\File $value)
+    public function setImageObject(File $value) : PageVersion
     {
         return $this->setImageId($value->getId());
     }
@@ -647,10 +646,10 @@ abstract class PageVersionBase extends Model
      * Get the User model for this  by Id.
      *
      * @uses \Octo\System\Store\UserStore::getById()
-     * @uses \Octo\System\Model\User
-     * @return \Octo\System\Model\User
+     * @uses User
+     * @return User|null
      */
-    public function getUser()
+    public function getUser() : ?User
     {
         $key = $this->getUserId();
 
@@ -658,15 +657,16 @@ abstract class PageVersionBase extends Model
            return null;
         }
 
-        return Store::get('User')->getById($key);
+        return User::Store()->getById($key);
     }
 
     /**
      * Set User - Accepts an ID, an array representing a User or a User model.
      * @throws \Exception
      * @param $value mixed
+     * @return PageVersion
      */
-    public function setUser($value)
+    public function setUser($value) : PageVersion
     {
         // Is this a scalar value representing the ID of this foreign key?
         if (is_scalar($value)) {
@@ -674,7 +674,7 @@ abstract class PageVersionBase extends Model
         }
 
         // Is this an instance of User?
-        if (is_object($value) && $value instanceof \Octo\System\Model\User) {
+        if (is_object($value) && $value instanceof User) {
             return $this->setUserObject($value);
         }
 
@@ -690,16 +690,11 @@ abstract class PageVersionBase extends Model
     /**
      * Set User - Accepts a User model.
      *
-     * @param $value \Octo\System\Model\User
+     * @param $value User
+     * @return PageVersion
      */
-    public function setUserObject(\Octo\System\Model\User $value)
+    public function setUserObject(User $value) : PageVersion
     {
         return $this->setUserId($value->getId());
-    }
-
-
-    public function Pages() : Query
-    {
-        return Store::get('Page')->where('current_version_id', $this->data['id']);
     }
 }

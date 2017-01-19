@@ -58,7 +58,7 @@ class PageStore extends Base\PageStoreBase
      */
     public function getLatestVersion(Page $page, $useConnection = 'read')
     {
-        return $page->PageVersions()->order('version', 'DESC')->first();
+        return PageVersion::Store()->where('page_id', $page->getId())->order('version', 'DESC')->first();
     }
 
     public function getParentPageOptions($options = null, $parent = null, $prefix = '')

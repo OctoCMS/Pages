@@ -10,8 +10,11 @@ use DateTime;
 use Block8\Database\Query;
 use Octo\Model;
 use Octo\Store;
-use Octo\Pages\Model\Page;
+
 use Octo\Pages\Store\PageStore;
+use Octo\Pages\Model\Page;
+use Octo\Pages\Model\PageVersion;
+use Octo\Pages\Model\ContentType;
 
 /**
  * Page Base Model
@@ -104,7 +107,6 @@ abstract class PageBase extends Model
      * Get the value of Id / id
      * @return string
      */
-
      public function getId() : string
      {
         $rtn = $this->data['id'];
@@ -116,7 +118,6 @@ abstract class PageBase extends Model
      * Get the value of ParentId / parent_id
      * @return string
      */
-
      public function getParentId() : ?string
      {
         $rtn = $this->data['parent_id'];
@@ -128,7 +129,6 @@ abstract class PageBase extends Model
      * Get the value of CurrentVersionId / current_version_id
      * @return int
      */
-
      public function getCurrentVersionId() : ?int
      {
         $rtn = $this->data['current_version_id'];
@@ -140,7 +140,6 @@ abstract class PageBase extends Model
      * Get the value of ContentTypeId / content_type_id
      * @return int
      */
-
      public function getContentTypeId() : int
      {
         $rtn = $this->data['content_type_id'];
@@ -152,7 +151,6 @@ abstract class PageBase extends Model
      * Get the value of Uri / uri
      * @return string
      */
-
      public function getUri() : string
      {
         $rtn = $this->data['uri'];
@@ -164,7 +162,6 @@ abstract class PageBase extends Model
      * Get the value of Position / position
      * @return int
      */
-
      public function getPosition() : int
      {
         $rtn = $this->data['position'];
@@ -176,7 +173,6 @@ abstract class PageBase extends Model
      * Get the value of PublishDate / publish_date
      * @return DateTime
      */
-
      public function getPublishDate() : ?DateTime
      {
         $rtn = $this->data['publish_date'];
@@ -192,7 +188,6 @@ abstract class PageBase extends Model
      * Get the value of ExpiryDate / expiry_date
      * @return DateTime
      */
-
      public function getExpiryDate() : ?DateTime
      {
         $rtn = $this->data['expiry_date'];
@@ -353,15 +348,15 @@ abstract class PageBase extends Model
         return $this;
     }
     
-    
+
     /**
      * Get the PageVersion model for this  by Id.
      *
      * @uses \Octo\Pages\Store\PageVersionStore::getById()
-     * @uses \Octo\Pages\Model\PageVersion
-     * @return \Octo\Pages\Model\PageVersion
+     * @uses PageVersion
+     * @return PageVersion|null
      */
-    public function getCurrentVersion()
+    public function getCurrentVersion() : ?PageVersion
     {
         $key = $this->getCurrentVersionId();
 
@@ -369,15 +364,16 @@ abstract class PageBase extends Model
            return null;
         }
 
-        return Store::get('PageVersion')->getById($key);
+        return PageVersion::Store()->getById($key);
     }
 
     /**
      * Set CurrentVersion - Accepts an ID, an array representing a PageVersion or a PageVersion model.
      * @throws \Exception
      * @param $value mixed
+     * @return Page
      */
-    public function setCurrentVersion($value)
+    public function setCurrentVersion($value) : Page
     {
         // Is this a scalar value representing the ID of this foreign key?
         if (is_scalar($value)) {
@@ -385,7 +381,7 @@ abstract class PageBase extends Model
         }
 
         // Is this an instance of CurrentVersion?
-        if (is_object($value) && $value instanceof \Octo\Pages\Model\PageVersion) {
+        if (is_object($value) && $value instanceof PageVersion) {
             return $this->setCurrentVersionObject($value);
         }
 
@@ -401,9 +397,10 @@ abstract class PageBase extends Model
     /**
      * Set CurrentVersion - Accepts a PageVersion model.
      *
-     * @param $value \Octo\Pages\Model\PageVersion
+     * @param $value PageVersion
+     * @return Page
      */
-    public function setCurrentVersionObject(\Octo\Pages\Model\PageVersion $value)
+    public function setCurrentVersionObject(PageVersion $value) : Page
     {
         return $this->setCurrentVersionId($value->getId());
     }
@@ -412,10 +409,10 @@ abstract class PageBase extends Model
      * Get the Page model for this  by Id.
      *
      * @uses \Octo\Pages\Store\PageStore::getById()
-     * @uses \Octo\Pages\Model\Page
-     * @return \Octo\Pages\Model\Page
+     * @uses Page
+     * @return Page|null
      */
-    public function getParent()
+    public function getParent() : ?Page
     {
         $key = $this->getParentId();
 
@@ -423,15 +420,16 @@ abstract class PageBase extends Model
            return null;
         }
 
-        return Store::get('Page')->getById($key);
+        return Page::Store()->getById($key);
     }
 
     /**
      * Set Parent - Accepts an ID, an array representing a Page or a Page model.
      * @throws \Exception
      * @param $value mixed
+     * @return Page
      */
-    public function setParent($value)
+    public function setParent($value) : Page
     {
         // Is this a scalar value representing the ID of this foreign key?
         if (is_scalar($value)) {
@@ -439,7 +437,7 @@ abstract class PageBase extends Model
         }
 
         // Is this an instance of Parent?
-        if (is_object($value) && $value instanceof \Octo\Pages\Model\Page) {
+        if (is_object($value) && $value instanceof Page) {
             return $this->setParentObject($value);
         }
 
@@ -455,9 +453,10 @@ abstract class PageBase extends Model
     /**
      * Set Parent - Accepts a Page model.
      *
-     * @param $value \Octo\Pages\Model\Page
+     * @param $value Page
+     * @return Page
      */
-    public function setParentObject(\Octo\Pages\Model\Page $value)
+    public function setParentObject(Page $value) : Page
     {
         return $this->setParentId($value->getId());
     }
@@ -466,10 +465,10 @@ abstract class PageBase extends Model
      * Get the ContentType model for this  by Id.
      *
      * @uses \Octo\Pages\Store\ContentTypeStore::getById()
-     * @uses \Octo\Pages\Model\ContentType
-     * @return \Octo\Pages\Model\ContentType
+     * @uses ContentType
+     * @return ContentType|null
      */
-    public function getContentType()
+    public function getContentType() : ?ContentType
     {
         $key = $this->getContentTypeId();
 
@@ -477,15 +476,16 @@ abstract class PageBase extends Model
            return null;
         }
 
-        return Store::get('ContentType')->getById($key);
+        return ContentType::Store()->getById($key);
     }
 
     /**
      * Set ContentType - Accepts an ID, an array representing a ContentType or a ContentType model.
      * @throws \Exception
      * @param $value mixed
+     * @return Page
      */
-    public function setContentType($value)
+    public function setContentType($value) : Page
     {
         // Is this a scalar value representing the ID of this foreign key?
         if (is_scalar($value)) {
@@ -493,7 +493,7 @@ abstract class PageBase extends Model
         }
 
         // Is this an instance of ContentType?
-        if (is_object($value) && $value instanceof \Octo\Pages\Model\ContentType) {
+        if (is_object($value) && $value instanceof ContentType) {
             return $this->setContentTypeObject($value);
         }
 
@@ -509,21 +509,11 @@ abstract class PageBase extends Model
     /**
      * Set ContentType - Accepts a ContentType model.
      *
-     * @param $value \Octo\Pages\Model\ContentType
+     * @param $value ContentType
+     * @return Page
      */
-    public function setContentTypeObject(\Octo\Pages\Model\ContentType $value)
+    public function setContentTypeObject(ContentType $value) : Page
     {
         return $this->setContentTypeId($value->getId());
-    }
-
-
-    public function Pages() : Query
-    {
-        return Store::get('Page')->where('parent_id', $this->data['id']);
-    }
-
-    public function PageVersions() : Query
-    {
-        return Store::get('PageVersion')->where('page_id', $this->data['id']);
     }
 }
